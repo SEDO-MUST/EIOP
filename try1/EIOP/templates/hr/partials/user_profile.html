@@ -1,0 +1,435 @@
+<!-- templates/hr/partials/user_profile.html -->
+
+<div class="card border-0 shadow-sm h-100">
+
+    <div class="card-header bg-white">
+
+        <div class="d-flex justify-content-between align-items-center">
+
+            <div>
+
+                <h5 class="mb-1"> 
+
+                    {{ profile.name }}
+
+                </h5>
+
+                <small class="text-muted">
+
+                    {{ target_user.username }}
+
+                </small>
+
+            </div>
+
+            <div>
+
+                {% if profile.status == "ACTIVE" %}
+
+                    <span class="badge bg-success">
+
+                        Active
+
+                    </span>
+
+                {% elif profile.status == "INACTIVE" %}
+
+                    <span class="badge bg-secondary">
+
+                        Inactive
+
+                    </span>
+
+                {% elif profile.status == "SUSPENDED" %}
+
+                    <span class="badge bg-warning text-dark">
+
+                        Suspended
+
+                    </span>
+
+                {% elif profile.status == "DELETED" %}
+
+                    <span class="badge bg-danger">
+
+                        Deleted
+
+                    </span>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="card-body">
+
+        <!-- =========================================== -->
+        <!-- GENERAL INFORMATION -->
+        <!-- =========================================== -->
+
+        <h6 class="fw-bold mb-3">
+
+            General Information
+
+        </h6>
+
+        <table class="table table-borderless table-sm">
+
+            <tr>
+
+                <th width="35%">Username</th>
+
+                <td>{{ target_user.username }}</td>
+
+            </tr>
+
+            <tr>
+
+                <th>Email</th>
+
+                <td>{{ target_user.email }}</td>
+
+            </tr>
+
+            <tr>
+
+                <th>Name</th>
+
+                <td>{{ profile.name }}</td>
+
+            </tr>
+
+            <tr>
+
+                <th>Phone</th>
+
+                <td>{{ profile.phoneNumber }}</td>
+
+            </tr>
+
+            <tr>
+
+                <th>Enterprise</th>
+
+                <td>{{ profile.enterprise.name }}</td>
+
+            </tr>
+
+            <tr>
+
+                <th>Gender</th>
+
+                <td>{{ profile.gender }}</td>
+
+            </tr>
+
+            <tr>
+
+                <th>Date of Birth</th>
+
+                <td>{{ profile.dateOfBirth }}</td>
+
+            </tr>
+
+            <tr>
+
+                <th>Specialization</th>
+
+                <td>{{ profile.specialization }}</td>
+
+            </tr>
+
+            <tr>
+
+                <th>Notes</th>
+
+                <td>
+
+                    {{ profile.note|default:"-" }}
+
+                </td>
+
+            </tr>
+
+            <tr>
+
+                <th>Joined</th>
+
+                <td>{{ target_user.date_joined }}</td>
+
+            </tr>
+
+            <tr>
+
+                <th>Last Login</th>
+
+                <td>{{ target_user.last_login|default:"Never" }}</td>
+
+            </tr>
+
+        </table>
+
+        <!-- =========================================== -->
+        <!-- MANAGER INFORMATION -->
+        <!-- =========================================== -->
+
+        {% if profile.rank %}
+
+        <hr>
+
+        <h6 class="fw-bold mb-3">
+
+            Management Information
+
+        </h6>
+
+        <table class="table table-borderless table-sm">
+
+            <tr>
+
+                <th width="35%">Rank</th>
+
+                <td>{{ profile.rank }}</td>
+
+            </tr>
+
+            <tr>
+
+                <th>Management Type</th>
+
+                <td>{{ profile.managementType }}</td>
+
+            </tr>
+
+        </table>
+
+        {% endif %}
+
+        <!-- =========================================== -->
+        <!-- STAFF INFORMATION -->
+        <!-- =========================================== -->
+
+        {% if profile.field %}
+
+        <hr>
+
+        <h6 class="fw-bold mb-3">
+
+            Staff Information
+
+        </h6>
+
+        <table class="table table-borderless table-sm">
+
+            <tr>
+
+                <th width="35%">Field</th>
+
+                <td>{{ profile.field }}</td>
+
+            </tr>
+
+            <tr>
+
+                <th>Direct Manager</th>
+
+                <td>
+
+                    {% if profile.directManager %}
+
+                        {{ profile.directManager.name }}
+
+                    {% else %}
+
+                        -
+
+                    {% endif %}
+
+                </td>
+
+            </tr>
+
+        </table>
+
+        {% endif %}
+
+        <!-- =========================================== -->
+        <!-- ROLE -->
+        <!-- =========================================== -->
+
+        <hr>
+
+        <h6 class="fw-bold mb-3">
+
+            Role
+
+        </h6>
+
+        <div class="mb-3">
+
+            {% if profile.role %}
+
+                <span class="badge bg-primary">
+
+                    {{ profile.role.name }}
+
+                </span>
+
+            {% else %}
+
+                -
+
+            {% endif %}
+
+        </div>
+
+        <!-- =========================================== -->
+        <!-- PERMISSIONS -->
+        <!-- =========================================== -->
+
+        <hr>
+
+        <h6 class="fw-bold mb-3">
+
+            Permissions
+
+        </h6>
+
+        <div class="mb-4">
+
+            {% for permission in profile.permissions.all %}
+
+                <span class="badge bg-secondary m-1">
+
+                    {{ permission.name }}
+
+                </span>
+
+            {% empty %}
+
+                <span class="text-muted">
+
+                    No permissions assigned.
+
+                </span>
+
+            {% endfor %}
+
+        </div>
+
+        <!-- =========================================== -->
+        <!-- ACTIONS -->
+        <!-- =========================================== -->
+
+        <hr>
+
+        <h6 class="fw-bold mb-3">
+
+            Actions
+
+        </h6>
+
+        <div class="d-grid gap-2">
+
+            {% if can_update %}
+
+            <button
+                class="btn btn-primary edit-user-btn"
+                data-user="{{ target_user.id }}">
+
+                <i class="fas fa-edit"></i>
+
+                Edit
+
+            </button>
+
+            {% endif %}
+
+            {% if can_delete %}
+
+            <button
+                class="btn btn-danger delete-user-btn"
+                data-user="{{ target_user.id }}">
+
+                <i class="fas fa-trash"></i>
+
+                Delete
+
+            </button>
+
+            {% endif %}
+
+            {% if can_restore %}
+
+            <button
+                class="btn btn-success restore-user-btn"
+                data-user="{{ target_user.id }}">
+
+                <i class="fas fa-undo"></i>
+
+                Restore
+
+            </button>
+
+            {% endif %}
+
+            {% if can_promote %}
+
+            <button
+                class="btn btn-warning promote-user-btn"
+                data-user="{{ target_user.id }}">
+
+                <i class="fas fa-arrow-up"></i>
+
+                Promote to Manager
+
+            </button>
+
+            {% endif %}
+
+            {% if can_demote %}
+
+            <button
+                class="btn btn-warning demote-user-btn"
+                data-user="{{ target_user.id }}">
+
+                <i class="fas fa-arrow-down"></i>
+
+                Demote to Staff
+
+            </button>
+
+            {% endif %}
+
+        </div>
+
+        <!-- =========================================== -->
+        <!-- AUDIT -->
+        <!-- =========================================== -->
+
+        {% if request.user|has_perm:"Audit" %}
+
+        <hr>
+
+        <div class="d-grid">
+
+            <button
+                class="btn btn-outline-dark view-audit-btn"
+                data-user="{{ target_user.id }}">
+
+                <i class="fas fa-history"></i>
+
+                View Audit Log
+
+            </button>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</div>

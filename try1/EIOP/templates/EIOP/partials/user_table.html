@@ -1,0 +1,349 @@
+{% load static %}
+
+<div class="table-responsive">
+
+    <table class="table table-hover align-middle mb-0">
+
+        <thead class="table-light">
+
+            <tr>
+
+                <th>Name</th>
+
+                <th>Username</th>
+
+                <th>Email</th>
+
+                <th>Type</th>
+
+                <th>Role</th>
+
+                <th>Rank</th>
+
+                <th>Field</th>
+
+                <th>Status</th>
+
+                <th class="text-center">Actions</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            {% for user in users %}
+
+            <tr class="user-row"
+                data-user-id="{{ user.id }}"
+                style="cursor:pointer;">
+
+                <td>
+
+                    <strong>{{ user.name }}</strong>
+
+                </td>
+
+                <td>
+
+                    {{ user.username }}
+
+                </td>
+
+                <td> 
+
+                    {{ user.email }}
+
+                </td>
+
+                <td>
+
+                    {{ user.user_type }}
+
+                </td>
+
+                <td>
+
+                    {{ user.role }}
+
+                </td>
+
+                <td>
+
+                    {{ user.rank }}
+
+                </td>
+
+                <td>
+
+                    {{ user.field }}
+
+                </td>
+
+                <td>
+
+                    {% if user.status == "ACTIVE" %}
+
+                        <span class="badge bg-success">
+                            Active
+                        </span>
+
+                    {% elif user.status == "PENDING" %}
+
+                        <span class="badge bg-warning text-dark">
+                            Pending
+                        </span>
+
+                    {% elif user.status == "INACTIVE" %}
+
+                        <span class="badge bg-secondary">
+                            Inactive
+                        </span>
+
+                    {% elif user.status == "SUSPENDED" %}
+
+                        <span class="badge bg-danger">
+                            Suspended
+                        </span>
+
+                    {% elif user.status == "DELETED" %}
+
+                        <span class="badge bg-dark">
+                            Deleted
+                        </span>
+
+                    {% else %}
+
+                        <span class="badge bg-light text-dark">
+                            {{ user.status }}
+                        </span>
+
+                    {% endif %}
+
+                </td>
+
+                <td class="text-center">
+
+                    <div class="btn-group btn-group-sm">
+
+                        {% if user.can_update %}
+
+                        <button
+                            class="btn btn-warning edit-user-btn"
+                            data-user-id="{{ user.id }}"
+                            title="Edit">
+
+                            <i class="fas fa-edit"></i>
+
+                        </button>
+
+                        {% endif %}
+
+                        {% if user.can_delete %}
+
+                        <button
+                            class="btn btn-danger delete-user-btn"
+                            data-user-id="{{ user.id }}"
+                            title="Delete">
+
+                            <i class="fas fa-trash"></i>
+
+                        </button>
+
+                        {% endif %}
+
+                        {% if user.can_restore %}
+
+                        <button
+                            class="btn btn-success restore-user-btn"
+                            data-user-id="{{ user.id }}"
+                            title="Restore">
+
+                            <i class="fas fa-undo"></i>
+
+                        </button>
+
+                        {% endif %}
+
+                        {% if user.can_promote %}
+
+                        <button
+                            class="btn btn-primary promote-user-btn"
+                            data-user-id="{{ user.id }}"
+                            title="Promote">
+
+                            <i class="fas fa-arrow-up"></i>
+
+                        </button>
+
+                        {% endif %}
+
+                        {% if user.can_demote %}
+
+                        <button
+                            class="btn btn-secondary demote-user-btn"
+                            data-user-id="{{ user.id }}"
+                            title="Demote">
+
+                            <i class="fas fa-arrow-down"></i>
+
+                        </button>
+
+                        {% endif %}
+
+                        {% if user.can_audit %}
+
+                        <button
+                            class="btn btn-dark audit-btn"
+                            data-user-id="{{ user.id }}"
+                            title="Audit Log">
+
+                            <i class="fas fa-history"></i>
+
+                        </button>
+
+                        {% endif %}
+
+                    </div>
+
+                </td>
+
+            </tr>
+
+            {% empty %}
+
+            <tr>
+
+                <td colspan="9" class="text-center py-5">
+
+                    <i class="fas fa-users-slash fa-3x text-muted mb-3"></i>
+
+                    <br>
+
+                    <h5 class="mt-3">
+
+                        No users found
+
+                    </h5>
+
+                    <p class="text-muted mb-0">
+
+                        No users match the selected filters.
+
+                    </p>
+
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+{% if users.has_other_pages %}
+
+<div class="d-flex justify-content-center mt-4">
+
+    <nav>
+
+        <ul class="pagination mb-0">
+
+            {% if users.has_previous %}
+
+            <li class="page-item">
+
+                <a class="page-link"
+                   href="#"
+                   data-page="{{ users.previous_page_number }}">
+
+                    Previous
+
+                </a>
+
+            </li>
+
+            {% else %}
+
+            <li class="page-item disabled">
+
+                <span class="page-link">
+
+                    Previous
+
+                </span>
+
+            </li>
+
+            {% endif %}
+
+            {% for page in users.paginator.page_range %}
+
+                {% if users.number == page %}
+
+                <li class="page-item active">
+
+                    <span class="page-link">
+
+                        {{ page }}
+
+                    </span>
+
+                </li>
+
+                {% else %}
+
+                <li class="page-item">
+
+                    <a class="page-link"
+                       href="#"
+                       data-page="{{ page }}">
+
+                        {{ page }}
+
+                    </a>
+
+                </li>
+
+                {% endif %}
+
+            {% endfor %}
+
+            {% if users.has_next %}
+
+            <li class="page-item">
+
+                <a class="page-link"
+                   href="#"
+                   data-page="{{ users.next_page_number }}">
+
+                    Next
+
+                </a>
+
+            </li>
+
+            {% else %}
+
+            <li class="page-item disabled">
+
+                <span class="page-link">
+
+                    Next
+
+                </span>
+
+            </li>
+
+            {% endif %}
+
+        </ul>
+
+    </nav>
+
+</div>
+
+{% endif %}

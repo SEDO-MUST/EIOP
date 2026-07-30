@@ -1,0 +1,37 @@
+{% include "/emplates/EIOP/partials/pagination.html" with page=users %}
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Type</th>
+            <th>Requester</th>
+            <th>Target User</th>
+            <th>Status</th>
+            <th>Created</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for req in requests %}
+        <tr class="request-row" data-request-id="{{ req.id }}" style="cursor:pointer;">
+            <td>{{ req.id }}</td>
+            <td>{{ req.get_request_type_display }}</td>
+            <td>{{ req.requester.username }}</td>
+            <td>{{ req.target_user.username|default:"—" }}</td>
+            <td><span class="badge badge-{{ req.status|lower }}">{{ req.get_status_display }}</span></td>
+            <td>{{ req.created_at|date:"Y-m-d H:i" }}</td>
+            <td>
+                {% if req.status == "PENDING" %}
+                <button class="btn btn-sm btn-success approve-btn" data-request-id="{{ req.id }}"><i class="fas fa-check"></i> Approve</button>
+                <button class="btn btn-sm btn-danger reject-btn" data-request-id="{{ req.id }}"><i class="fas fa-times"></i> Reject</button>
+                {% endif %}
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7" class="text-center">No requests found.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+<div class="pagination-container">
+    {% include "partials/pagination.html" with page=requests %}
+</div>

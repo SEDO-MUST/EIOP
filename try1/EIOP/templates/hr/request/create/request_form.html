@@ -1,0 +1,370 @@
+<!-- EIOP/templates/EIOP/partials/request_form.html -->
+
+<form id="requestForm"
+      action="/hr/request/create/"
+      method="post">
+
+    {% csrf_token %}
+
+    <!-- ========================= -->
+    <!-- Common Information -->
+    <!-- ========================= -->
+
+    <div class="row g-3">
+
+        <div class="col-md-4">
+            <label class="form-label">User Type</label>
+            <select class="form-select"
+                    id="user_type"
+                    name="user_type"
+                    required>
+
+                <option value="STAFF">Staff</option>
+
+                <option value="MANAGER">Manager</option>
+
+                {% if request.user|is_owner %}
+                <option value="ORG_ADMIN">Organization Administrator</option>
+                {% endif %}
+
+            </select>
+        </div>
+
+        <div class="col-md-4">
+            <label class="form-label">Username</label>
+            <input
+                type="text"
+                class="form-control"
+                name="username"
+                required>
+        </div>
+
+        <div class="col-md-4">
+            <label class="form-label">Full Name</label>
+            <input
+                type="text"
+                class="form-control"
+                name="name"
+                required>
+        </div>
+
+        <div class="col-md-6">
+            <label class="form-label">Email</label>
+            <input
+                type="email"
+                class="form-control"
+                name="email"
+                required>
+        </div>
+
+        <div class="col-md-6">
+            <label class="form-label">Phone Number</label>
+            <input
+                type="text"
+                class="form-control"
+                name="phoneNumber">
+        </div>
+
+        <div class="col-md-4">
+            <label class="form-label">Gender</label>
+
+            <select
+                class="form-select"
+                name="gender">
+
+                <option value="">---------</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+
+            </select>
+        </div>
+
+        <div class="col-md-4">
+            <label class="form-label">Date of Birth</label>
+
+            <input
+                type="date"
+                class="form-control"
+                name="dateOfBirth">
+        </div>
+
+        <div class="col-md-4">
+            <label class="form-label">Specialization</label>
+
+            <input
+                type="text"
+                class="form-control"
+                name="specialization">
+        </div>
+
+        <div class="col-12">
+            <label class="form-label">Account</label>
+
+            <input
+                type="text"
+                class="form-control"
+                name="account">
+        </div>
+
+    </div>
+
+    <hr>
+
+    <!-- ========================= -->
+    <!-- STAFF -->
+    <!-- ========================= -->
+
+    <div id="staffFields">
+
+        <h6 class="mb-3">Staff Information</h6>
+
+        <div class="row g-3">
+
+            <div class="col-md-6">
+                <label class="form-label">Field</label>
+
+                <input
+                    type="text"
+                    class="form-control"
+                    name="field">
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">
+                    Direct Manager
+                </label>
+
+                <select
+                    class="form-select"
+                    name="direct_manager">
+
+                    <option value="">---------</option>
+
+                    {% for manager in managers %}
+                    <option value="{{ manager.id }}">
+                        {{ manager.name }}
+                    </option>
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+            <div class="col-12">
+
+                <label class="form-label">
+                    Permissions
+                </label>
+
+                <div class="border rounded p-3">
+
+                    {% for permission in permissions %}
+
+                    <div class="form-check">
+
+                        <input
+                            class="form-check-input"
+                            type="checkbox"
+                            name="permissions"
+                            value="{{ permission.id }}"
+                            id="staff_perm_{{ permission.id }}">
+
+                        <label
+                            class="form-check-label"
+                            for="staff_perm_{{ permission.id }}">
+
+                            {{ permission.name }}
+
+                        </label>
+
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ========================= -->
+    <!-- MANAGER -->
+    <!-- ========================= -->
+
+    <div id="managerFields" style="display:none;">
+
+        <h6 class="mb-3">Manager Information</h6>
+
+        <div class="row g-3">
+
+            <div class="col-md-6">
+
+                <label class="form-label">
+                    Rank
+                </label>
+
+                <select
+                    class="form-select"
+                    name="rank">
+
+                    {% for rank in ranks %}
+                    <option value="{{ rank }}">
+                        {{ rank }}
+                    </option>
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+            <div class="col-md-6">
+
+                <label class="form-label">
+                    Management Type
+                </label>
+
+                <select
+                    class="form-select"
+                    name="management_type">
+
+                    <option value="">---------</option>
+                    <option value="TOP">Top Management</option>
+                    <option value="MIDDLE">Middle Management</option>
+                    <option value="LOWER">Lower Management</option>
+
+                </select>
+
+            </div>
+
+            <div class="col-12">
+
+                <label class="form-label">
+                    Permissions
+                </label>
+
+                <div class="border rounded p-3">
+
+                    {% for permission in permissions %}
+
+                    <div class="form-check">
+
+                        <input
+                            class="form-check-input"
+                            type="checkbox"
+                            name="permissions"
+                            value="{{ permission.id }}"
+                            id="manager_perm_{{ permission.id }}">
+
+                        <label
+                            class="form-check-label"
+                            for="manager_perm_{{ permission.id }}">
+
+                            {{ permission.name }}
+
+                        </label>
+
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </div>
+
+        </div>
+ 
+    </div>
+
+    <!-- ========================= -->
+    <!-- ADMIN -->
+    <!-- ========================= -->
+
+    <div id="adminFields" style="display:none;">
+
+        <div class="alert alert-info mt-3 mb-0">
+
+            Organization Administrators only require the common
+            information above.
+
+        </div>
+
+    </div>
+
+    <hr>
+
+    <div class="mb-3">
+
+        <label class="form-label">
+            Note
+        </label>
+
+        <textarea
+            class="form-control"
+            rows="3"
+            name="note"></textarea>
+
+    </div>
+
+    <div class="text-end">
+
+        <button
+            type="submit"
+            class="btn btn-primary">
+
+            Submit Request
+
+        </button>
+
+    </div>
+
+</form>
+
+<script>
+
+(function(){
+
+    const type=document.getElementById("user_type");
+
+    const staff=document.getElementById("staffFields");
+
+    const manager=document.getElementById("managerFields");
+
+    const admin=document.getElementById("adminFields");
+
+    function updateForm(){
+
+        const value=type.value;
+
+        staff.style.display="none";
+        manager.style.display="none";
+        admin.style.display="none";
+
+        if(value==="STAFF"){
+
+            staff.style.display="block";
+
+        }
+
+        else if(value==="MANAGER"){
+
+            manager.style.display="block";
+ 
+        }
+
+        else if(value==="ORG_ADMIN"){
+
+            admin.style.display="block";
+
+        }
+
+    }
+
+    type.addEventListener("change",updateForm);
+
+    updateForm();
+
+})();
+
+</script>

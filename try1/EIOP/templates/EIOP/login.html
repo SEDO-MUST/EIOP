@@ -1,0 +1,43 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en"> 
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EIOP | Login</title>
+    <link rel="stylesheet" href="{% static 'style.css' %}" >
+    <link rel="stylesheet" href="{% static 'responsive.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card"> 
+            <div class="logo">
+                <i class="fas fa-stream"></i>
+		<h1>Enterprise Intelligence & Operations Platform  <span>EIOP</span></h1>
+	    </div>
+            <p class="auth-sub">Sign in to your account</p>
+
+            <div id="loginError" class="auth-error"></div>
+
+            <form id="loginForm" method="post" class="form-group">
+              
+                {% csrf_token %}
+                {{form}}
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-sign-in-alt"></i> Sign In</button>
+                </div>
+                <div class="auth-footer">
+                   <a href="{% url 'forgetP' %}" class="forgot-link">Forgot password?</a>
+                </div>
+		 <div class="login-footer">
+                <p>All Rights recived for Elsiddeeg Mu https://github.com/SEDO-MUST/EIOP.git </p>
+            </div>
+            </form>
+        </div>
+    </div>
+
+    
+</body>
+</html>

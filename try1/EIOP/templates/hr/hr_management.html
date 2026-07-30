@@ -1,0 +1,785 @@
+{% extends "EIOP/base.html" %}
+{% load static %}
+
+{% block title %}
+<title>EIOP | HR Management</title>
+{% endblock %}
+
+{% block content %}
+
+<main class="main-content">
+
+<div class="page-shell">
+
+    <!-- ====================================== -->
+    <!-- HERO -->
+    <!-- ====================================== -->
+
+    <section class="hero">
+
+        <div class="hero-left">
+
+            <span class="hero-tag">
+                Human Resource Management
+            </span>
+
+            <h1>
+                People Management
+            </h1>
+
+            <p>
+                Manage staff, managers and organization administrators
+                from one central dashboard.
+            </p>
+
+        </div>
+
+        <div class="hero-right">
+
+            <a href="{% url 'create_user_request' %}"
+               class="create-btn">
+
+                <i class="fas fa-user-plus"></i>
+
+                Create User
+
+            </a>
+
+        </div>
+
+    </section>
+
+
+    <!-- ====================================== -->
+    <!-- DASHBOARD -->
+    <!-- ====================================== -->
+
+    <section class="dashboard-grid">
+
+        <div class="dashboard-card">
+
+            <div class="card-icon blue">
+                <i class="fas fa-users"></i>
+            </div>
+
+            <div>
+
+                <span>Total Users</span>
+
+                <h2>
+                    {{ users.paginator.count|default:"0" }}
+                </h2>
+
+            </div>
+
+        </div>
+
+
+        <div class="dashboard-card">
+
+            <div class="card-icon green">
+                <i class="fas fa-user-check"></i>
+            </div>
+
+            <div>
+
+                <span>Active Users</span>
+
+                <h2>
+                    {{ users.paginator.count|default:"0" }}
+                </h2>
+
+            </div>
+
+        </div>
+
+
+        <div class="dashboard-card">
+
+            <div class="card-icon orange">
+                <i class="fas fa-user-tie"></i>
+            </div>
+
+            <div>
+
+                <span>Managers</span>
+
+                <h2>--</h2>
+
+            </div>
+
+        </div>
+
+
+        <div class="dashboard-card">
+
+            <div class="card-icon purple">
+                <i class="fas fa-clock"></i>
+            </div>
+
+            <div>
+
+                <span>Pending Requests</span>
+
+                <h2>--</h2>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ====================================== -->
+    <!-- FILTERS -->
+    <!-- ====================================== -->
+
+    <section class="filter-card">
+
+        <div class="filter-header">
+
+            <h2>
+
+                <i class="fas fa-filter"></i>
+
+                Search & Filters
+
+            </h2>
+
+        </div>
+
+        <div class="filter-grid">
+
+            <div class="filter-item">
+
+                <label>
+
+                    Search
+
+                </label>
+
+                <input
+                    id="searchInput"
+                    type="text"
+                    placeholder="Search users...">
+
+            </div>
+
+            <div class="filter-item">
+
+                <label>
+
+                    Role
+
+                </label>
+
+                <select id="roleFilter">
+
+                    <option value="">
+                        All Roles
+                    </option>
+
+                </select>
+
+            </div>
+
+            <div class="filter-item">
+
+                <label>
+
+                    User Type
+
+                </label>
+
+                <select id="typeFilter">
+
+                    <option value="">
+                        All Types
+                    </option>
+
+                </select>
+
+            </div>
+
+            <div class="filter-item">
+
+                <label>
+
+                    Status
+
+                </label>
+
+                <select id="statusFilter">
+
+                    <option value="">
+                        All Status
+                    </option>
+
+                </select>
+
+            </div>
+
+            <div class="filter-item">
+
+                <label>
+
+                    Permission
+
+                </label>
+
+                <select id="permissionFilter">
+
+                    <option value="">
+                        All Permissions
+                    </option>
+
+                </select>
+
+            </div>
+
+            <div class="filter-item reset-box">
+
+                <button
+                    id="resetFiltersBtn"
+                    type="button">
+
+                    <i class="fas fa-undo"></i>
+
+                    Reset Filters
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </section>
+        <!-- ====================================== -->
+    <!-- USER TABLE -->
+    <!-- ====================================== -->
+
+    <section class="table-card">
+
+        <div class="table-header">
+
+            <div>
+
+                <h2>
+
+                    <i class="fas fa-users"></i>
+
+                    Users
+
+                </h2>
+
+                <p>
+                    Browse, search and manage users.
+                </p>
+
+            </div>
+
+            <div class="table-actions">
+
+                <button
+                    class="table-btn"
+                    onclick="window.location.reload();">
+
+                    <i class="fas fa-sync-alt"></i>
+
+                    Refresh
+
+                </button>
+
+            </div>
+
+        </div>
+
+        <div
+            id="userTableContainer"
+            class="table-wrapper">
+
+            {% include "EIOP/partials/user_table.html" %}
+
+        </div>
+
+    </section>
+
+</div>
+
+</main>
+
+<style>
+
+:root{
+
+    --primary:#2563eb;
+    --primary-light:#dbeafe;
+
+    --success:#10b981;
+    --warning:#f59e0b;
+    --purple:#8b5cf6;
+
+    --background:#f4f7fb;
+    --card:#ffffff;
+
+    --border:#e5e7eb;
+
+    --text:#1f2937;
+    --muted:#6b7280;
+
+    --shadow:0 15px 40px rgba(0,0,0,.08);
+
+}
+
+.hr-page{
+
+    background:var(--background);
+    min-height:100vh;
+    padding:35px;
+
+}
+
+.page-shell{
+
+    width:100%;
+    max-width:1600px;
+    margin:auto;
+
+}
+
+.hero{
+
+    background:linear-gradient(135deg,#2563eb,#1d4ed8);
+
+    border-radius:22px;
+
+    padding:45px;
+
+    color:white;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:35px;
+
+    box-shadow:var(--shadow);
+
+}
+
+.hero-tag{
+
+    display:inline-block;
+
+    background:rgba(255,255,255,.15);
+
+    padding:8px 16px;
+
+    border-radius:100px;
+
+    margin-bottom:18px;
+
+    font-size:13px;
+
+    letter-spacing:1px;
+
+}
+
+.hero h1{
+
+    margin:0;
+
+    font-size:42px;
+
+}
+
+.hero p{
+
+    margin-top:15px;
+
+    max-width:650px;
+
+    line-height:1.8;
+
+    opacity:.95;
+
+}
+
+.create-btn{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    text-decoration:none;
+
+    color:#2563eb;
+
+    background:white;
+
+    padding:16px 30px;
+
+    border-radius:12px;
+
+    font-weight:600;
+
+    transition:.25s;
+
+}
+
+.create-btn:hover{
+
+    transform:translateY(-3px);
+
+}
+
+.dashboard-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+
+    gap:24px;
+
+    margin-bottom:35px;
+
+}
+
+.dashboard-card{
+
+    background:var(--card);
+
+    border-radius:18px;
+
+    padding:26px;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:20px;
+
+    box-shadow:var(--shadow);
+
+}
+
+.card-icon{
+
+    width:64px;
+
+    height:64px;
+
+    border-radius:16px;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    color:white;
+
+    font-size:24px;
+
+}
+
+.blue{
+
+    background:#2563eb;
+
+}
+
+.green{
+
+    background:#10b981;
+
+}
+
+.orange{
+
+    background:#f59e0b;
+
+}
+
+.purple{
+
+    background:#8b5cf6;
+
+}
+
+.dashboard-card span{
+
+    color:var(--muted);
+
+    font-size:14px;
+
+}
+
+.dashboard-card h2{
+
+    margin-top:8px;
+
+    font-size:34px;
+
+}
+
+.filter-card{
+
+    background:white;
+
+    border-radius:18px;
+
+    padding:30px;
+
+    margin-bottom:35px;
+
+    box-shadow:var(--shadow);
+
+}
+
+.filter-header{
+
+    margin-bottom:25px;
+
+}
+
+.filter-header h2{
+
+    margin:0;
+
+}
+<style>
+
+.filter-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+
+    gap:22px;
+
+}
+
+.filter-item{
+
+    display:flex;
+
+    flex-direction:column;
+
+}
+
+.filter-item label{
+
+    margin-bottom:8px;
+
+    font-weight:600;
+
+    color:var(--text);
+
+}
+
+.filter-item input,
+.filter-item select{
+
+    padding:14px 16px;
+
+    border:1px solid var(--border);
+
+    border-radius:12px;
+
+    background:#fafafa;
+
+    transition:.25s;
+
+    font-size:15px;
+
+}
+
+.filter-item input:focus,
+.filter-item select:focus{
+
+    outline:none;
+
+    border-color:var(--primary);
+
+    background:white;
+
+    box-shadow:0 0 0 4px rgba(37,99,235,.12);
+
+}
+
+.reset-box{
+
+    justify-content:flex-end;
+
+}
+
+#resetFiltersBtn{
+
+    height:48px;
+
+    border:none;
+
+    border-radius:12px;
+
+    background:#eef2ff;
+
+    color:var(--primary);
+
+    cursor:pointer;
+
+    font-weight:600;
+
+    transition:.25s;
+
+}
+
+#resetFiltersBtn:hover{
+
+    background:var(--primary);
+
+    color:white;
+
+}
+
+.table-card{
+
+    background:white;
+
+    border-radius:18px;
+
+    overflow:hidden;
+
+    box-shadow:var(--shadow);
+
+}
+
+.table-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:30px;
+
+    border-bottom:1px solid var(--border);
+
+}
+
+.table-header h2{
+
+    margin:0;
+
+    color:var(--text);
+
+}
+
+.table-header p{
+
+    margin-top:8px;
+
+    color:var(--muted);
+
+}
+
+.table-btn{
+
+    border:none;
+
+    background:var(--primary);
+
+    color:white;
+
+    padding:12px 20px;
+
+    border-radius:10px;
+
+    cursor:pointer;
+
+    font-weight:600;
+
+    transition:.25s;
+
+}
+
+.table-btn:hover{
+
+    transform:translateY(-2px);
+
+}
+
+.table-wrapper{
+
+    overflow:auto;
+
+    padding:25px;
+
+    min-height:500px;
+
+}
+
+@media(max-width:900px){
+
+    .hero{
+
+        flex-direction:column;
+
+        align-items:flex-start;
+
+        gap:25px;
+
+    }
+
+    .table-header{
+
+        flex-direction:column;
+
+        align-items:flex-start;
+
+        gap:18px;
+
+    }
+
+}
+
+</style>
+
+{% endblock %}
+
+{% block add %}
+
+<script>
+
+const PEOPLE_URLS = {
+
+    search: "/hr/search/",
+
+    profile: "/hr/profile/",
+
+    delete: "/hr/user/",
+
+    restore: "/hr/user/",
+
+    promote: "/hr/user/",
+
+    demote: "/hr/user/",
+
+    audit: "/hr/audit/",
+
+    cancel: "/hr/request/",
+
+    filterData: "/hr/filter-data/"
+
+};
+
+</script>
+
+<script src="{% static 'js/people.js' %}"></script>
+
+{% endblock %}

@@ -1,0 +1,67 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EIOP | Home</title>    
+    <link rel="stylesheet" href="{% static 'style.css' %}" >
+    <link rel="stylesheet" href="{% static 'responsive.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+</head>
+<body>
+    <header class="landing-nav">
+        <div class="nav-brand">
+            <i class="fas fa-stream"></i>Enterprise Intelligence and Operations Platform <span>EIOP</span>
+        </div>
+        <div class="nav-actions">
+            <a href="login/" class="btn btn-primary"><i class="fas fa-sign-in-alt"></i> Log In</a>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-badge"><i class="fas fa-rocket" style="margin-right:8px;"></i> Next‑gen operations</div>
+            <h1>Enterprise Intelligence <br /><span>&amp; Operations Platform</span></h1>
+            <p>Centralize your people, projects, resources, and insights in one place. Real‑time dashboards, role‑based access, and smart automation — built for modern organizations.</p>
+            <div class="hero-actions">
+                <a href="/register" class="btn btn-primary btn-lg"><i class="fas fa-play"></i> Get Started</a>
+                <a href="#features" class="btn btn-outline btn-lg"><i class="fas fa-chevron-down"></i> Explore</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="features-section" id="features">
+        <h2 class="section-title">Everything you need to thrive</h2>
+        <p class="section-sub">A unified platform that adapts to your organisation — from schools to enterprises.</p>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-users-cog"></i></div>
+                <h3>Role‑Based Access</h3>
+                <p>Every user sees only what they need. RBAC ensures security and clarity across departments.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-chart-pie"></i></div>
+                <h3>Real‑Time Analytics</h3>
+                <p>Live dashboards and reports give you instant visibility into projects, resources, and performance.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-project-diagram"></i></div>
+                <h3>Project &amp; Resource Tracking</h3>
+                <p>Manage operations from a single pane of glass — assign tasks, monitor progress, and optimise usage.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-bell"></i></div>
+                <h3>Smart Alerts</h3>
+                <p>Monitor predefined risks and get notified before issues escalate. Stay ahead of the curve.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer class="landing-footer">
+        <p> 2026 <a href="https://github.com/SEDO-MUST/EIOP.git" target="_blank">EIOP</a> · All rights reserved _ Built by Elsiddeeg Mustafa</p>
+    </footer>
+
+    <script src="js-home.js"></script>
+</body>
+</html>

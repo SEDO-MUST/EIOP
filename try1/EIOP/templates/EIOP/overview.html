@@ -1,0 +1,203 @@
+{% extends 'EIOP/base.html' %}
+
+{% block title %}
+
+<title>EIOP | Overview</title>
+
+{% endblock %}
+
+
+
+{% block content%}         
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="page-header">
+            <h1>Dashboard Overview</h1>
+            <p>Welcome back! Here's what's happening with your workflows today.</p>
+        </div>
+        
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon primary">
+                    <i class="fas fa-project-diagram"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>12</h3>
+                    <p>Active Workflows</p>
+                </div>
+                <div class="stat-trend up">
+                    <i class="fas fa-arrow-up"></i> 2 new
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon success">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>48</h3>
+                    <p>Completed Tasks</p>
+                </div>
+                <div class="stat-trend up">
+                    <i class="fas fa-arrow-up"></i> 18%
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon warning">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>7</h3>
+                    <p>Pending Approvals</p>
+                </div>
+                <div class="stat-trend down">
+                    <i class="fas fa-arrow-down"></i> 3 overdue
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon danger">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>3</h3>
+                    <p>Issues</p>
+                </div>
+                <div class="stat-trend neutral">
+                    <i class="fas fa-minus"></i> No change
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recent Activity and Workflow Progress -->
+        <div class="content-grid">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Recent Activity</h3>
+                    <a href="#" class="btn-link">View All</a>
+                </div>
+                <div class="card-body">
+                    <ul class="activity-list">
+                        <li>
+                            <div class="activity-icon success">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="activity-details">
+                                <p><strong>Content Approval</strong> workflow completed</p>
+                                <small>10 minutes ago</small>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="activity-icon warning">
+                                <i class="fas fa-user-clock"></i>
+                            </div>
+                            <div class="activity-details">
+                                <p><strong>John Doe</strong> assigned to "Client Onboarding"</p>
+                                <small>45 minutes ago</small>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="activity-icon primary">
+                                <i class="fas fa-plus"></i>
+                            </div>
+                            <div class="activity-details">
+                                <p>New workflow <strong>Budget Approval</strong> created</p>
+                                <small>2 hours ago</small>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="activity-icon danger">
+                                <i class="fas fa-exclamation-circle"></i>
+                            </div>
+                            <div class="activity-details">
+                                <p><strong>Issue</strong> in "Invoice Processing" workflow</p>
+                                <small>5 hours ago</small>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h3>Workflow Progress</h3>
+                    <a href="#" class="btn-link">See Details</a>
+                </div>
+                <div class="card-body">
+                    <div class="progress-item">
+                        <div class="progress-label">
+                            <span>Client Onboarding</span>
+                            <span>65%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 65%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="progress-item">
+                        <div class="progress-label">
+                            <span>Content Approval</span>
+                            <span>100%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 100%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="progress-item">
+                        <div class="progress-label">
+                            <span>Invoice Processing</span>
+                            <span>30%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 30%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="progress-item">
+                        <div class="progress-label">
+                            <span>Employee Onboarding</span>
+                            <span>80%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 80%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Quick Actions -->
+        <div class="card">
+            <div class="card-header">
+                <h3>Quick Actions</h3>
+                <p>Frequently used actions</p>
+            </div>
+            <div class="card-body">
+                <div class="action-buttons">
+                    <a href="workflow-detail.html" class="action-btn">
+                        <i class="fas fa-plus-circle"></i>
+                        <span>Create Workflow</span>
+                    </a>
+                    <a href="workflows.html" class="action-btn">
+                        <i class="fas fa-list"></i>
+                        <span>View All Workflows</span>
+                    </a>
+                    <a href="#" class="action-btn">
+                        <i class="fas fa-user-plus"></i>
+                        <span>Add Team Member</span>
+                    </a>
+                    <a href="#" class="action-btn">
+                        <i class="fas fa-file-export"></i>
+                        <span>Export Report</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+   
+
+{% endblock %}    
+    

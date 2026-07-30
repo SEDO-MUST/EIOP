@@ -1,0 +1,489 @@
+<form id="editUserForm"
+      method="post"
+      action="{% url 'update_user_request' request_obj.id %}">
+
+    {% csrf_token %}
+
+    <div class="modal-header">
+
+        <h5 class="modal-title">
+
+            Edit User Request
+
+        </h5>
+
+        <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal">
+        </button>
+
+    </div>
+
+    <div class="modal-body">
+
+        <!-- ====================================== -->
+        <!-- USER TYPE -->
+        <!-- ====================================== -->
+
+        <div class="mb-4">
+
+            <label class="form-label">
+
+                User Type
+
+            </label>
+
+            <select
+                class="form-select"
+                id="userType"
+                name="user_type"
+                required>
+
+                <option value="STAFF"
+                    {% if request_obj.request_data.user_type == "STAFF" %}selected{% endif %}>
+
+                    Staff
+
+                </option>
+
+                <option value="MANAGER"
+                    {% if request_obj.request_data.user_type == "MANAGER" %}selected{% endif %}>
+
+                    Manager
+
+                </option>
+
+                {% if request.user|has_perm:"Create Organization Administrator" %}
+
+                <option value="ORG_ADMIN"
+                    {% if request_obj.request_data.user_type == "ORG_ADMIN" %}selected{% endif %}>
+
+                    Organization Administrator
+
+                </option>
+
+                {% endif %}
+
+            </select>
+
+        </div>
+
+        <hr>
+
+        <!-- ====================================== -->
+        <!-- COMMON INFORMATION -->
+        <!-- ====================================== -->
+
+        <div class="row">
+
+            <div class="col-md-6 mb-3">
+
+                <label>
+
+                    Username
+
+                </label>
+
+                <input
+                    class="form-control"
+                    name="username"
+                    value="{{ request_obj.request_data.username }}">
+
+            </div>
+
+            <div class="col-md-6 mb-3">
+
+                <label>
+
+                    Name
+
+                </label>
+
+                <input
+                    class="form-control"
+                    name="name"
+                    value="{{ request_obj.request_data.name }}"
+                    required>
+
+            </div>
+
+            <div class="col-md-6 mb-3">
+
+                <label>
+
+                    Email
+
+                </label>
+
+                <input
+                    class="form-control"
+                    name="email"
+                    value="{{ request_obj.request_data.email }}">
+
+            </div>
+
+            <div class="col-md-6 mb-3">
+
+                <label>
+
+                    Phone
+
+                </label>
+
+                <input
+                    class="form-control"
+                    name="phoneNumber"
+                    value="{{ request_obj.request_data.phoneNumber }}">
+
+            </div>
+
+            <div class="col-md-6 mb-3">
+
+                <label>
+
+                    Gender
+
+                </label>
+
+                <select
+                    class="form-select"
+                    name="gender">
+
+                    <option value="Male"
+                        {% if request_obj.request_data.gender == "Male" %}selected{% endif %}>
+
+                        Male
+
+                    </option>
+
+                    <option value="Female"
+                        {% if request_obj.request_data.gender == "Female" %}selected{% endif %}>
+
+                        Female
+
+                    </option>
+
+                </select>
+
+            </div>
+
+            <div class="col-md-6 mb-3">
+
+                <label>
+
+                    Date of Birth
+
+                </label>
+
+                <input
+                    type="date"
+                    class="form-control"
+                    name="dateOfBirth"
+                    value="{{ request_obj.request_data.dateOfBirth }}">
+
+            </div>
+
+            <div class="col-md-6 mb-3">
+
+                <label>
+
+                    Specialization
+
+                </label>
+
+                <input
+                    class="form-control"
+                    name="specialization"
+                    value="{{ request_obj.request_data.specialization }}">
+
+            </div>
+
+            <div class="col-md-6 mb-3">
+
+                <label>
+
+                    Account
+
+                </label>
+
+                <input
+                    class="form-control"
+                    name="account"
+                    value="{{ request_obj.request_data.account }}">
+
+            </div>
+
+            <div class="col-12 mb-3">
+
+                <label>
+
+                    Notes
+
+                </label>
+
+                <textarea
+                    class="form-control"
+                    rows="3"
+                    name="note">{{ request_obj.request_data.note }}</textarea>
+
+            </div>
+
+        </div>
+
+        <!-- ====================================== -->
+        <!-- STAFF -->
+        <!-- ====================================== -->
+
+        <div id="staffFields">
+
+            <hr>
+
+            <h5>
+
+                Staff Information
+
+            </h5>
+
+            <div class="row">
+
+                <div class="col-md-6">
+
+                    <label>
+
+                        Field
+
+                    </label>
+
+                    <select
+                        class="form-select"
+                        name="field">
+
+                        {% for field in fields %}
+
+                        <option
+                            value="{{ field.id }}"
+                            {% if request_obj.request_data.field == field.id|stringformat:"s" %}selected{% endif %}>
+
+                            {{ field.name }}
+
+                        </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+                <div class="col-md-6">
+
+                    <label>
+
+                        Direct Manager
+
+                    </label>
+
+                    <select
+                        class="form-select"
+                        name="direct_manager">
+
+                        {% for manager in managers %}
+
+                        <option
+                            value="{{ manager.id }}"
+                            {% if request_obj.request_data.direct_manager == manager.id|stringformat:"s" %}selected{% endif %}>
+
+                            {{ manager.name }}
+
+                        </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- ====================================== -->
+        <!-- MANAGER -->
+        <!-- ====================================== -->
+
+        <div id="managerFields">
+
+            <hr>
+
+            <h5>
+
+                Manager Information
+
+            </h5>
+
+            <div class="row">
+
+                <div class="col-md-6">
+
+                    <label>
+
+                        Rank
+
+                    </label>
+
+                    <input
+                        type="number"
+                        class="form-control"
+                        name="rank"
+                        value="{{ request_obj.request_data.rank }}">
+
+                </div>
+
+                <div class="col-md-6">
+
+                    <label>
+
+                        Management Type
+
+                    </label>
+
+                    <select
+                        class="form-select"
+                        name="management_type">
+
+                        <option value="GENERAL"
+                            {% if request_obj.request_data.management_type == "GENERAL" %}selected{% endif %}>
+
+                            General
+
+                        </option>
+
+                        <option value="FIELD"
+                            {% if request_obj.request_data.management_type == "FIELD" %}selected{% endif %}>
+
+                            Field
+
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- ====================================== -->
+        <!-- PERMISSIONS -->
+        <!-- ====================================== -->
+
+        <hr>
+
+        <h5>
+
+            Permissions
+
+        </h5>
+
+        <div class="row">
+
+            {% for permission in permissions %}
+
+            <div class="col-md-4">
+
+                <div class="form-check">
+
+                    <input
+
+                        class="form-check-input"
+
+                        type="checkbox"
+
+                        value="{{ permission.id }}"
+
+                        name="permissions"
+
+                        {% if permission.id in selected_permissions %}checked{% endif %}>
+
+                    <label class="form-check-label">
+
+                        {{ permission.name }}
+
+                    </label>
+
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+    <div class="modal-footer">
+
+        <button
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+            type="button">
+
+            Cancel
+
+        </button>
+
+        <button
+            class="btn btn-primary"
+            type="submit">
+
+            Save Changes
+
+        </button>
+
+    </div>
+
+</form>
+
+<script>
+
+(function () {
+
+    const userType = document.getElementById("userType");
+
+    const staffFields = document.getElementById("staffFields");
+
+    const managerFields = document.getElementById("managerFields");
+
+    function refreshSections() {
+
+        staffFields.style.display = "none";
+
+        managerFields.style.display = "none";
+
+        if (userType.value === "STAFF") {
+
+            staffFields.style.display = "block";
+
+        }
+
+        else if (userType.value === "MANAGER") {
+
+            managerFields.style.display = "block";
+
+        }
+
+    }
+
+    refreshSections();
+
+    userType.addEventListener(
+
+        "change",
+
+        refreshSections
+
+    );
+
+})();
+
+</script>

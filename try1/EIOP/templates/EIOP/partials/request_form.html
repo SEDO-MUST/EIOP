@@ -1,0 +1,514 @@
+{% load static %}
+<div class="stat-card">
+<form id="requestForm" action="/hr/request/create/" method="post">
+{% csrf_token %}
+
+<div class="request-container">
+
+    <div class="request-card">
+
+        <div class="card-header">
+            <h2>Create User</h2>
+            
+        </div>
+
+        <!-- ========================= -->
+        <!-- USER TYPE -->
+        <!-- ========================= -->
+
+        <div class="section">
+
+            <label class="section-title" for="user_type">
+                User Type
+            </label>
+
+            <select id="user_type"
+                    name="user_type"
+                    required>
+
+                <option value="">
+                    Select user type...
+                </option>
+
+                <option value="STAFF">
+                    Staff
+                </option>
+
+                {% if is_manager or is_org_admin or is_owner %}
+                <option value="MANAGER">
+                    Manager
+                </option>
+                {% endif %}
+
+                {% if is_owner %}
+                <option value="ORG_ADMIN">
+                    Organization Administrator
+                </option>
+                {% endif %}
+
+            </select>
+
+        </div>
+
+        <!-- ========================= -->
+        <!-- COMMON USER -->
+        <!-- ========================= -->
+
+        <div id="commonSection"
+             class="section"
+             style="display:none;">
+
+            <h3>Django User</h3>
+
+            <div class="grid">
+
+                <div class="field">
+                    <label>Username</label>
+                    <input type="text"
+                           name="username"
+                           class="common-field">
+                </div>
+
+                <div class="field">
+                    <label>Email</label>
+                    <input type="email"
+                           name="email"
+                           class="common-field">
+                </div>
+
+                <div class="field">
+                    <label>First Name</label>
+                    <input type="text"
+                           name="first_name"
+                           class="common-field">
+                </div>
+
+                <div class="field">
+                    <label>Last Name</label>
+                    <input type="text"
+                           name="last_name"
+                           class="common-field">
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- ========================= -->
+        <!-- STAFF -->
+        <!-- ========================= -->
+
+        <div id="staffSection"
+             class="section profile-section"
+             style="display:none;">
+
+            <h3>Staff Profile</h3>
+
+            <div class="grid">
+
+                <div class="field">
+                    <label>Account</label>
+                    <input type="text"
+                           name="account"
+                           class="staff-field">
+                </div>
+
+                <div class="field">
+                    <label>Phone Number</label>
+                    <input type="text"
+                           name="phoneNumber"
+                           class="staff-field">
+                </div>
+
+                <div class="field">
+                    <label>Gender</label>
+
+                    <select name="gender"
+                            class="staff-field">
+
+                        <option value="">---------</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+
+                    </select>
+
+                </div>
+
+                <div class="field">
+                    <label>Date of Birth</label>
+                    <input type="date"
+                           name="dateOfBirth"
+                           class="staff-field">
+                </div>
+
+                <div class="field">
+                    <label>Specialization</label>
+                    <input type="text"
+                           name="specialization"
+                           class="staff-field">
+                </div>
+
+                <div class="field">
+                    <label>Field</label>
+                    <input type="text"
+                           name="field"
+                           class="staff-field">
+                </div>
+
+                <div class="field">
+                    <label>Direct Manager</label>
+
+                    <select name="direct_manager"
+                            class="staff-field">
+
+                        <option value="">---------</option>
+
+                        {% for manager in managers %}
+                        <option value="{{ manager.id }}">
+                            {{ manager.name }}
+                        </option>
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+                <div class="field full">
+
+                    <label>Permissions</label>
+
+                    <div class="permission-box">
+
+                        {% for permission in permissions %}
+
+                        <label class="permission-item">
+
+                            <input type="checkbox"
+                                   name="permissions"
+                                   value="{{ permission.id }}"
+                                   class="staff-field">
+
+                            {{ permission.name }}
+
+                        </label>
+
+                        {% endfor %}
+
+                    </div>
+
+                </div>
+
+                <div class="field full">
+
+                    <label>Note</label>
+
+                    <textarea rows="4"
+                              name="note"
+                              class="staff-field"></textarea>
+
+                </div>
+
+            </div>
+
+        </div>
+        <!-- ========================= -->
+        <!-- MANAGER -->
+        <!-- ========================= -->
+
+        <div id="managerSection"
+             class="section profile-section"
+             style="display:none;">
+
+            <h3>Manager Profile</h3>
+
+            <div class="grid">
+
+                <div class="field">
+                    <label>Account</label>
+                    <input type="text"
+                           name="account"
+                           class="manager-field">
+                </div>
+
+                <div class="field">
+                    <label>Phone Number</label>
+                    <input type="text"
+                           name="phoneNumber"
+                           class="manager-field">
+                </div>
+
+                <div class="field">
+                    <label>Gender</label>
+
+                    <select name="gender"
+                            class="manager-field">
+
+                        <option value="">---------</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+
+                    </select>
+
+                </div>
+
+                <div class="field">
+                    <label>Date of Birth</label>
+                    <input type="date"
+                           name="dateOfBirth"
+                           class="manager-field">
+                </div>
+
+                <div class="field">
+                    <label>Specialization</label>
+                    <input type="text"
+                           name="specialization"
+                           class="manager-field">
+                </div>
+
+                <div class="field">
+                    <label>Rank</label>
+
+                    <select name="rank"
+                            class="manager-field">
+
+                        {% for rank in ranks %}
+                        <option value="{{ rank }}">
+                            {{ rank }}
+                        </option>
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+                <div class="field">
+                    <label>Management Type</label>
+
+                    <select name="management_type"
+                            class="manager-field">
+
+                        <option value="">---------</option>
+                        <option value="TOP">Top Management</option>
+                        <option value="MIDDLE">Middle Management</option>
+                        <option value="LOWER">Lower Management</option>
+
+                    </select>
+
+                </div>
+
+                <div class="field full">
+
+                    <label>Permissions</label>
+
+                    <div class="permission-box">
+
+                        {% for permission in permissions %}
+
+                        <label class="permission-item">
+
+                            <input type="checkbox"
+                                   name="permissions"
+                                   value="{{ permission.id }}"
+                                   class="manager-field">
+
+                            {{ permission.name }}
+
+                        </label>
+
+                        {% endfor %}
+
+                    </div>
+
+                </div>
+
+                <div class="field full">
+
+                    <label>Note</label>
+
+                    <textarea rows="4"
+                              name="note"
+                              class="manager-field"></textarea>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- ========================= -->
+        <!-- ORGANIZATION ADMIN -->
+        <!-- ========================= -->
+
+        <div id="adminSection"
+             class="section profile-section"
+             style="display:none;">
+
+            <h3>Organization Administrator</h3>
+
+            <div class="grid">
+
+                <div class="field">
+                    <label>Account</label>
+                    <input type="text"
+                           name="account"
+                           class="admin-field">
+                </div>
+
+                <div class="field">
+                    <label>Phone Number</label>
+                    <input type="text"
+                           name="phoneNumber"
+                           class="admin-field">
+                </div>
+
+                <div class="field">
+                    <label>Gender</label>
+
+                    <select name="gender"
+                            class="admin-field">
+
+                        <option value="">---------</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+
+                    </select>
+
+                </div>
+
+                <div class="field">
+                    <label>Date of Birth</label>
+                    <input type="date"
+                           name="dateOfBirth"
+                           class="admin-field">
+                </div>
+
+                <div class="field">
+                    <label>Specialization</label>
+                    <input type="text"
+                           name="specialization"
+                           class="admin-field">
+                </div>
+
+                <div class="field full">
+
+                    <label>Note</label>
+
+                    <textarea rows="4"
+                              name="note"
+                              class="admin-field"></textarea>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="actions">
+
+            <button type="button"
+                    onclick="Modal.close(DOM.requestModal)">
+                Cancel
+            </button>
+
+            <button type="submit">
+                Create User
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+</form>
+</div>
+<style>
+
+.request-container{
+    display:flex;
+    justify-content:center;
+    padding:24px;
+}
+
+.request-card{
+    width:100%;
+    max-width:950px;
+    max-height:80vh;
+    overflow-y:auto;
+    background:#ffffff;
+    border:1px solid #d9d9d9;
+    border-radius:12px;
+    padding:30px;
+}
+
+.card-header{
+    margin-bottom:30px;
+}
+
+.section{
+    margin-bottom:30px;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+    gap:18px;
+}
+
+.field{
+    display:flex;
+    flex-direction:column;
+}
+
+.field.full{
+    grid-column:1/-1;
+}
+
+.field label{
+    margin-bottom:6px;
+}
+
+.field input,
+.field select,
+.field textarea,
+#user_type{
+    width:100%;
+    padding:10px;
+    border:1px solid #cfcfcf;
+    border-radius:8px;
+    box-sizing:border-box;
+}
+
+.permission-box{
+    border:1px solid #dcdcdc;
+    border-radius:8px;
+    padding:12px;
+    max-height:180px;
+    overflow-y:auto;
+}
+
+.permission-item{
+    display:flex;
+    gap:10px;
+    margin-bottom:8px;
+}
+
+.actions{
+    display:flex;
+    justify-content:flex-end;
+    gap:12px;
+    margin-top:30px;
+}
+
+.actions button{
+    padding:10px 20px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+}
+
+.actions button:last-child{
+    color:#fff;
+    background:#2463eb;
+}
+
+</style>

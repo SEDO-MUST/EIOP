@@ -1,0 +1,491 @@
+<form id="createUserForm"
+      method="post"
+      action="{% url 'create_user_request' %}">
+
+    {% csrf_token %}
+
+    <div class="modal-header">
+
+        <h5 class="modal-title">
+
+            Create User Request
+
+        </h5>
+
+        <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal">
+        </button>
+
+    </div>
+
+    <div class="modal-body">
+
+        <!-- ====================================== -->
+        <!-- USER TYPE -->
+        <!-- ====================================== -->
+
+        <div class="mb-4">
+
+            <label class="form-label">
+
+                User Type
+
+            </label>
+
+            <select
+                class="form-select"
+                id="userType"
+                name="user_type"
+                required>
+
+                <option value="">
+
+                    Select...
+
+                </option>
+
+                <option value="STAFF">
+
+                    Staff
+
+                </option>
+
+                <option value="MANAGER">
+
+                    Manager
+
+                </option>
+
+                {% if request.user|has_perm:"Create Organization Administrator" %}
+
+                <option value="ORG_ADMIN">
+
+                    Organization Administrator
+
+                </option>
+
+                {% endif %}
+
+            </select>
+
+        </div>
+
+        <hr>
+
+        <!-- ====================================== -->
+        <!-- COMMON INFORMATION -->
+        <!-- ====================================== -->
+
+        <div class="row">
+
+            <div class="col-md-6 mb-3">
+
+                <label>
+
+                    Username
+
+                </label>
+
+                <input
+                    class="form-control"
+                    name="username">
+
+            </div>
+
+            <div class="col-md-6 mb-3">
+
+                <label>
+
+                    Name
+
+                </label>
+
+                <input
+                    class="form-control"
+                    name="name"
+                    required>
+
+            </div>
+
+            <div class="col-md-6 mb-3">
+
+                <label>
+
+                    Email
+
+                </label>
+
+                <input
+                    type="email"
+                    class="form-control"
+                    name="email">
+
+            </div>
+
+            <div class="col-md-6 mb-3">
+
+                <label>
+
+                    Phone
+
+                </label>
+
+                <input
+                    class="form-control"
+                    name="phoneNumber">
+
+            </div>
+
+            <div class="col-md-6 mb-3">
+
+                <label>
+
+                    Gender
+
+                </label>
+
+                <select
+                    class="form-select"
+                    name="gender">
+
+                    <option value="Male">
+
+                        Male
+
+                    </option>
+
+                    <option value="Female">
+
+                        Female
+
+                    </option>
+
+                </select>
+
+            </div>
+
+            <div class="col-md-6 mb-3">
+
+                <label>
+
+                    Date of Birth
+
+                </label>
+
+                <input
+                    type="date"
+                    class="form-control"
+                    name="dateOfBirth">
+
+            </div>
+
+            <div class="col-md-6 mb-3">
+
+                <label>
+
+                    Specialization
+
+                </label>
+
+                <input
+                    class="form-control"
+                    name="specialization">
+
+            </div>
+
+            <div class="col-md-6 mb-3">
+
+                <label>
+
+                    Account
+
+                </label>
+
+                <input
+                    class="form-control"
+                    name="account">
+
+            </div>
+
+            <div class="col-12 mb-3">
+
+                <label>
+
+                    Notes
+
+                </label>
+
+                <textarea
+                    class="form-control"
+                    rows="3"
+                    name="note"></textarea>
+
+            </div>
+
+        </div>
+
+        <!-- ====================================== -->
+        <!-- STAFF -->
+        <!-- ====================================== -->
+
+        <div
+            id="staffFields"
+            style="display:none;">
+
+            <hr>
+
+            <h5>
+
+                Staff Information
+
+            </h5>
+
+            <div class="row">
+
+                <div class="col-md-6">
+
+                    <label>
+
+                        Field
+
+                    </label>
+
+                    <select
+                        class="form-select"
+                        name="field">
+
+                        {% for field in fields %}
+
+                        <option value="{{ field.id }}">
+
+                            {{ field.name }}
+
+                        </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+                <div class="col-md-6">
+
+                    <label>
+
+                        Direct Manager
+
+                    </label>
+
+                    <select
+                        class="form-select"
+                        name="direct_manager">
+
+                        <option value="">
+
+                            ---------
+
+                        </option>
+
+                        {% for manager in managers %}
+
+                        <option value="{{ manager.id }}">
+
+                            {{ manager.name }}
+
+                        </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- ====================================== -->
+        <!-- MANAGER -->
+        <!-- ====================================== -->
+
+        <div
+            id="managerFields"
+            style="display:none;">
+
+            <hr>
+
+            <h5>
+
+                Manager Information
+
+            </h5>
+
+            <div class="row">
+
+                <div class="col-md-6">
+
+                    <label>
+
+                        Rank
+
+                    </label>
+
+                    <input
+                        type="number"
+                        class="form-control"
+                        name="rank">
+
+                </div>
+
+                <div class="col-md-6">
+
+                    <label>
+
+                        Management Type
+
+                    </label>
+
+                    <select
+                        class="form-select"
+                        name="management_type">
+
+                        <option value="GENERAL">
+
+                            General
+
+                        </option>
+
+                        <option value="FIELD">
+
+                            Field
+
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- ====================================== -->
+        <!-- PERMISSIONS -->
+        <!-- ====================================== -->
+
+        <div
+            id="permissionSection"
+            style="display:none;">
+
+            <hr>
+
+            <h5>
+
+                Permissions
+
+            </h5>
+
+            <div class="row">
+
+                {% for permission in permissions %}
+
+                <div class="col-md-4">
+
+                    <div class="form-check">
+
+                        <input
+
+                            class="form-check-input"
+
+                            type="checkbox"
+
+                            value="{{ permission.id }}"
+
+                            name="permissions">
+
+                        <label class="form-check-label">
+
+                            {{ permission.name }}
+
+                        </label>
+
+                    </div>
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="modal-footer">
+
+        <button
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+            type="button">
+
+            Cancel
+
+        </button>
+
+        <button
+            class="btn btn-primary"
+            type="submit">
+
+            Submit Request
+
+        </button>
+
+    </div>
+
+</form>
+
+<script>
+
+const userType = document.getElementById("userType");
+
+const staffFields = document.getElementById("staffFields");
+
+const managerFields = document.getElementById("managerFields");
+
+const permissionSection = document.getElementById("permissionSection");
+
+userType.addEventListener("change", function () {
+
+    staffFields.style.display = "none";
+
+    managerFields.style.display = "none";
+
+    permissionSection.style.display = "none";
+
+    if (this.value === "STAFF") {
+
+        staffFields.style.display = "block";
+
+        permissionSection.style.display = "block";
+
+    }
+
+    else if (this.value === "MANAGER") {
+
+        managerFields.style.display = "block";
+
+        permissionSection.style.display = "block";
+
+    }
+
+    else if (this.value === "ORG_ADMIN") {
+
+        permissionSection.style.display = "block";
+
+    }
+
+});
+
+</script>

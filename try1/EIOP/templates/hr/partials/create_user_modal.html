@@ -1,0 +1,116 @@
+<form id="userForm" action="/hr/request/create/" method="post">
+    {% csrf_token %}
+    <div class="form-group">
+        <label>User Type</label>
+        <select name="user_type" class="form-control" required>
+            <option value="STAFF">Staff</option>
+            <option value="MANAGER">Manager</option>
+            <option value="ORG_ADMIN">Organization Administrator</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" name="username" class="form-control" placeholder="Optional, auto-generated if empty">
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label>Name</label>
+                <input type="text" name="name" class="form-control" required>
+            </div>
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" name="email" class="form-control" required>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label>Phone</label>
+                <input type="text" name="phoneNumber" class="form-control">
+            </div>
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label>Gender</label>
+                <select name="gender" class="form-control">
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label>Date of Birth</label>
+                <input type="date" name="dateOfBirth" class="form-control">
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <label>Specialization</label>
+        <input type="text" name="specialization" class="form-control">
+    </div>
+    <div class="form-group">
+        <label>Role</label>
+        <select name="role" class="form-control">
+            {% for role in roles %}
+            <option value="{{ role.id }}">{{ role.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-group">
+        <label>Permissions</label>
+        <select name="permissions" multiple class="form-control">
+            {% for perm in permissions %}
+            <option value="{{ perm.id }}">{{ perm.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <!-- Conditional fields based on user type (handled by JS) -->
+    <div id="staffFields" style="display:none;">
+        <div class="form-group">
+            <label>Field</label>
+            <input type="text" name="field" class="form-control">
+        </div>
+        <div class="form-group">
+            <label>Direct Manager</label>
+            <select name="direct_manager" class="form-control">
+                <option value="">None</option>
+                {% for mgr in managers %}
+                <option value="{{ mgr.id }}">{{ mgr.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    <div id="managerFields" style="display:none;">
+        <div class="form-group">
+            <label>Rank</label>
+            <input type="number" name="rank" class="form-control" value="1" min="1">
+        </div>
+        <div class="form-group">
+            <label>Management Type</label>
+            <input type="text" name="management_type" class="form-control">
+        </div>
+    </div>
+    <div class="form-group">
+        <label>Note</label>
+        <textarea name="note" class="form-control"></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit Request</button>
+</form>
+<script>
+$(document).ready(function() {
+    $('select[name="user_type"]').change(function() {
+        var val = $(this).val();
+        $('#staffFields').toggle(val === 'STAFF');
+        $('#managerFields').toggle(val === 'MANAGER');
+    }).trigger('change');
+});
+</script>

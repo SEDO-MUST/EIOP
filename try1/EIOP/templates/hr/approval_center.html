@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+<title>EIOP | Approval Center</title>
+{% endblock %}
+
+{% block content %}
+<div class="approval-container">
+    <div class="page-header">
+        <h1><i class="fas fa-check-double"></i> Approval Center</h1>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters-bar">
+        <div class="filter-group">
+            <input type="text" id="approvalSearchInput" placeholder="Search by requester..." class="form-control">
+        </div>
+        <div class="filter-group">
+            <select id="approvalStatusFilter" class="form-control">
+                <option value="">All Status</option>
+                <option value="PENDING">Pending</option>
+                <option value="APPROVED">Approved</option>
+                <option value="REJECTED">Rejected</option>
+                <option value="EXECUTED">Executed</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <select id="approvalTypeFilter" class="form-control">
+                <option value="">All Types</option>
+                <option value="CREATE_USER">Create User</option>
+                <option value="UPDATE_USER">Update User</option>
+                <option value="DELETE_USER">Delete User</option>
+                <option value="PROMOTE_USER">Promote User</option>
+                <option value="DEMOTE_USER">Demote User</option>
+                <option value="CHANGE_ROLE">Change Role</option>
+                <option value="CHANGE_PERMISSION">Change Permission</option>
+                <option value="CHANGE_RANK">Change Rank</option>
+            </select>
+        </div>
+        <button class="btn btn-secondary" id="resetApprovalFiltersBtn"><i class="fas fa-undo"></i> Reset</button>
+    </div>
+
+    <!-- Request Table -->
+    <div id="requestTableContainer">
+        {% include "approval/partials/request_table.html" with requests=requests %}
+    </div>
+</div>
+
+<!-- Request Details Modal -->
+<div class="modal fade" id="requestModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Request Details</h5>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body" id="requestModalBody">
+                <!-- Loaded via AJAX -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast -->
+<div id="toastContainer" style="position: fixed; top: 20px; right: 20px; z-index: 9999;"></div>
+{% endblock %}
+
+{% block add %}
+<script>
+$(document).ready(function() {
+    // Filter events
+    $('#approvalSearchInput, #approvalStatusFilter, #approvalTypeFilter').on('change keyup', function() {
+        loadRequestTable();
+    });
+    $('#resetApprovalFiltersBtn').click(function() {
+        $('#approvalSearchInput').val('');
+        $('#approvalStatusFilter').val('');
+        $('#approvalTypeFilter').val('');
+        loadRequestTable();
+    });
+
+    // Click on request row to view details
+    $(document).on('click', '.request-row', function() {
+        var requestId = $(this).data('request-id');
+        loadRequestDetails(requestId);
+    });
+
+    // Pagination
+    $(document).on('click', '.pagination a', function(e) {
+        e.preventDefault();
+        var url = $(this).attr('href');
+        loadRequestTable(url);
+    });
+
+    // Approve/Reject actions
+    $(document).on('click', '.approve-btn', function(e) {
+        e.stopPropagation();
+        var requestId = $(this).data('request-id');
+        if (confirm('Approve this request?')) {
+            $.post('/approval/' + requestId + '/approve/', {csrfmiddlewaretoken: '{{ csrf_token }}'}, function(response) {
+                if (response.success) {
+                    showToast('success', response.message);
+                    loadRequestTable();
+                    $('#requestModal').modal('hide');
+                } else {
+                    showToast('error', response.message);
+                }
+            });
+        }
+    });
+
+    $(document).on('click', '.reject-btn', function(e) {
+        e.stopPropagation();
+        var requestId = $(this).data('request-id');
+        var reason = prompt('Please provide a reason for rejection:');
+        if (reason !== null) {
+            $.post('/approval/' + requestId + '/reject/', {csrfmiddlewaretoken: '{{ csrf_token }}', comments: reason}, function(response) {
+                if (response.success) {
+                    showToast('success', response.message);
+                    loadRequestTable();
+                    $('#requestModal').modal('hide');
+                } else {
+                    showToast('error', response.message);
+                }
+            });
+        }
+    });
+
+    function loadRequestTable(url) {
+        var params = {
+            search: $('#approvalSearchInput').val(),
+            status: $('#approvalStatusFilter').val(),
+            type: $('#approvalTypeFilter').val()
+        };
+        if (!url) {
+            url = '/approval/search/?' + $.param(params);
+        }
+        $('#requestTableContainer').html('<div class="text-center"><i class="fas fa-spinner fa-spin"></i> Loading...</div>');
+        $.get(url, function(data) {
+            $('#requestTableContainer').html(data);
+        }).fail(function() {
+            showToast('error', 'Failed to load requests.');
+        });
+    }
+
+    function loadRequestDetails(requestId) {
+        $('#requestModalBody').html('<div class="text-center"><i class="fas fa-spinner fa-spin"></i> Loading...</div>');
+        $('#requestModal').modal('show');
+        $.get('/approval/' + requestId + '/', function(data) {
+            $('#requestModalBody').html(data);
+        }).fail(function() {
+            showToast('error', 'Failed to load request details.');
+            $('#requestModal').modal('hide');
+        });
+    }
+
+    function showToast(type, message) {
+        var color = type === 'success' ? 'green' : 'red';
+        var html = '<div style="background:'+color+';color:white;padding:10px;margin-bottom:10px;border-radius:5px;">'+message+'</div>';
+        $('#toastContainer').append(html);
+        setTimeout(function() {
+            $('#toastContainer').children().first().remove();
+        }, 5000);
+    }
+});
+</script>
+{% endblock %}

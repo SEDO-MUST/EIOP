@@ -1,0 +1,322 @@
+{% extends "EIOP/base.html" %}
+{% load static %}
+
+{% block title %}
+<title>Analytics | EIOP</title>
+{% endblock %}
+
+{% block content %}
+
+<div class="main-content">
+<div class="analytics-page">
+
+    <!-- ===================== PAGE HEADER ===================== -->
+
+    <div class="page-header">
+        <div class="header-left">
+            <h1>
+                <i class="fas fa-chart-line"></i>
+                Enterprise Analytics
+            </h1>
+            <p>
+                Monitor organizational performance, user activity,
+                approval efficiency and operational trends.
+            </p>
+        </div>
+
+        <div class="header-right">
+            <button class="btn btn-primary">
+                <i class="fas fa-file-export"></i>
+                Export Report
+            </button>
+        </div>
+    </div>
+
+    <!-- ===================== FILTERS ===================== -->
+
+    <div class="filters-bar">
+
+        <div class="filter-group">
+
+            <label>Date Range</label>
+
+            <select class="dropdown">
+                <option>Last 7 Days</option>
+                <option selected>Last 30 Days</option>
+                <option>Last 90 Days</option>
+                <option>This Year</option>
+            </select>
+
+            <label>Department</label>
+
+            <select class="dropdown">
+                <option>All Departments</option>
+                <option>Administration</option>
+                <option>Human Resources</option>
+                <option>Finance</option>
+                <option>Operations</option>
+            </select>
+
+            <label>User Type</label>
+
+            <select class="dropdown">
+                <option>All Users</option>
+                <option>Staff</option>
+                <option>Manager</option>
+                <option>Organization Administrator</option>
+            </select>
+
+        </div>
+
+    </div>
+
+    <!-- ===================== SUMMARY ===================== -->
+
+    <div class="stats-grid">
+
+        <div class="stat-card">
+
+            <div class="stat-icon primary">
+                <i class="fas fa-users"></i>
+            </div>
+
+            <div class="stat-info">
+                <h3>284</h3>
+                <p>Total Users</p>
+            </div>
+
+            <div class="stat-trend up">
+                <i class="fas fa-arrow-up"></i>
+                8%
+            </div>
+
+        </div>
+
+        <div class="stat-card">
+
+            <div class="stat-icon success">
+                <i class="fas fa-user-check"></i>
+            </div>
+
+            <div class="stat-info">
+                <h3>247</h3>
+                <p>Active Users</p>
+            </div>
+
+            <div class="stat-trend up">
+                <i class="fas fa-arrow-up"></i>
+                4%
+            </div>
+
+        </div>
+
+        <div class="stat-card">
+
+            <div class="stat-icon warning">
+                <i class="fas fa-file-signature"></i>
+            </div>
+
+            <div class="stat-info">
+                <h3>64</h3>
+                <p>Pending Requests</p>
+            </div>
+
+            <div class="stat-trend down">
+                <i class="fas fa-arrow-down"></i>
+                12%
+            </div>
+
+        </div>
+
+        <div class="stat-card">
+
+            <div class="stat-icon danger">
+                <i class="fas fa-check-circle"></i>
+            </div>
+
+            <div class="stat-info">
+                <h3>91%</h3>
+                <p>Approval Rate</p>
+            </div>
+
+            <div class="stat-trend up">
+                <i class="fas fa-arrow-up"></i>
+                5%
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ===================== CHARTS ===================== -->
+
+    <div class="content-grid">
+
+        <div class="card">
+
+            <div class="card-header">
+                <h3>User Growth</h3>
+            </div>
+
+            <div class="card-body">
+
+                <div class="chart-placeholder">
+
+                    <div class="fake-bars">
+
+                        <div class="bar" style="height:45%"></div>
+                        <div class="bar" style="height:60%"></div>
+                        <div class="bar" style="height:55%"></div>
+                        <div class="bar" style="height:75%"></div>
+                        <div class="bar" style="height:68%"></div>
+                        <div class="bar" style="height:82%"></div>
+                        <div class="bar" style="height:95%"></div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="card">
+
+            <div class="card-header">
+                <h3>User Distribution</h3>
+            </div>
+
+            <div class="card-body">
+
+                <div class="analytics-circle">
+
+                    <div class="circle-center">
+                        <strong>284</strong>
+                        <small>Users</small>
+                    </div>
+
+                </div>
+
+                <div class="analytics-legend">
+
+                    <div class="legend-row">
+                        <span class="dot blue"></span>
+                        Staff
+                        <strong>68%</strong>
+                    </div>
+
+                    <div class="legend-row">
+                        <span class="dot green"></span>
+                        Managers
+                        <strong>21%</strong>
+                    </div>
+
+                    <div class="legend-row">
+                        <span class="dot orange"></span>
+                        Org Admins
+                        <strong>11%</strong>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ===================== REQUEST ANALYTICS ===================== -->
+
+    <div class="card">
+
+        <div class="card-header">
+
+            <h3>Approval Request Performance</h3>
+
+        </div>
+
+        <div class="card-body">
+
+            <table class="data-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>Request Type</th>
+                        <th>Total</th>
+                        <th>Approved</th>
+                        <th>Rejected</th>
+                        <th>Pending</th>
+                        <th>Average Time</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    <tr>
+                        <td>Create User</td>
+                        <td>112</td>
+                        <td>98</td>
+                        <td>6</td>
+                        <td>8</td>
+                        <td>1.4 Days</td>
+                    </tr>
+
+                    <tr>
+                        <td>Update User</td>
+                        <td>74</td>
+                        <td>66</td>
+                        <td>2</td>
+                        <td>6</td>
+                        <td>1.1 Days</td>
+                    </tr>
+
+                    <tr>
+                        <td>Deactivate User</td>
+                        <td>28</td>
+                        <td>23</td>
+                        <td>1</td>
+                        <td>4</td>
+                        <td>2.0 Days</td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+</div>
+
+{% endblock %}
+
+{% block add %}
+
+<script>
+
+document.querySelectorAll(".progress-fill").forEach(function(bar){
+
+    const width = bar.style.width;
+
+    bar.style.width = "0";
+
+    setTimeout(function(){
+
+        bar.style.width = width;
+
+    },200);
+
+});
+
+</script>
+
+{% endblock %}
+```

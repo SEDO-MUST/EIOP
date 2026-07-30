@@ -1,0 +1,225 @@
+{% load static %}
+{% load permissions_tags %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% block title %}
+    <title>EIOP</title>
+    {% endblock %}
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <link rel="stylesheet" href="{% static 'responsive.css' %}">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+
+{% if user.is_authenticated %}
+
+<!-- =========================== TOP NAVBAR ============================ -->
+<nav class="top-navbar">
+    <div class="nav-left">
+        <button class="sidebar-toggle" id="sidebarToggle">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="logo">
+            <i class="fas fa-stream"></i>
+            <h2>
+                <span>EIOP</span>
+                
+                    {% if current_enterprise %}
+                        {{ current_enterprise.name }}
+                    {% else %}
+                        Enterprise Intelligence & Operations Platform
+                    {% endif %}
+                
+            </h2>
+        </div>
+    </div>
+
+    <div class="nav-right">
+        <a href="{% url 'home' %}" class="btn btn-primary">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </a>
+
+        <div class="notification">
+            <i class="fas fa-bell"></i>
+            <span class="badge">3</span>
+        </div>
+
+        <div class="user-profile">
+            <img src="{% static 'assets/avatar.png' %}" alt="Avatar">
+            <span>
+                {% if current_profile %}
+                    {{ current_profile.name }}
+                {% else %}
+                    {{ user.username }}
+                {% endif %}
+            </span>
+            <i class="fas fa-chevron-down"></i>
+            <div class="dropdown-menu">
+                <a href="{% url 'profile' %}"><i class="fas fa-user"></i> Profile</a>
+                <a href="{% url 'setting' %}"><i class="fas fa-cog"></i> Settings</a>
+                <!-- Actual logout form inside dropdown -->
+                <form action="{% url 'logout' %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="dropdown-item">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- =========================== SIDEBAR ============================ -->
+<aside class="sidebar" id="sidebar">
+<div class="sidebar-menu">
+
+    <div class="menu-header">MAIN</div>
+
+    <!-- Dashboard – always present -->
+    <a href="{% url 'dashboard' %}"
+       class="menu-item {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+        <i class="fas fa-home"></i><span>Dashboard</span>
+    </a>
+
+    <!-- Analytics – only if URL exists AND user has permission -->
+    {% has_perm "Analytics" as can_analytics %}
+    {% url 'analytics' as analytics_url %}
+    {% if can_analytics and analytics_url %}
+    <a href="{{ analytics_url }}"
+       class="menu-item {% if request.resolver_match.url_name == 'analytics' %}active{% endif %}">
+        <i class="fas fa-chart-line"></i><span>Analytics</span>
+    </a>
+    {% endif %}
+
+    <!-- Reports -->
+    {% has_perm "Reports" as can_reports %}
+    {% url 'reports' as reports_url %}
+    {% if can_reports and reports_url %}
+    <a href="{{ reports_url }}"
+       class="menu-item {% if request.resolver_match.url_name == 'reports' %}active{% endif %}">
+        <i class="fas fa-chart-bar"></i><span>Reports</span>
+    </a>
+    {% endif %}
+
+    <!-- Projects -->
+    {% has_perm "Projects" as can_projects %}
+    {% url 'projects' as projects_url %}
+    {% if can_projects and projects_url %}
+    <a href="{{ projects_url }}"
+       class="menu-item {% if request.resolver_match.url_name == 'projects' %}active{% endif %}">
+        <i class="fas fa-project-diagram"></i><span>Projects</span>
+    </a>
+    {% endif %}
+
+    <!-- Teams -->
+    {% has_perm "Team Management" as can_team %}
+    {% url 'teams' as teams_url %}
+    {% if can_team and teams_url %}
+    <a href="{{ teams_url }}"
+       class="menu-item {% if request.resolver_match.url_name == 'teams' %}active{% endif %}">
+        <i class="fas fa-users"></i><span>Teams</span>
+    </a>
+    {% endif %}
+
+    <!-- User Management section -->
+    {% has_perm "User Management" as can_user_mgmt %}
+    {% if can_user_mgmt %}
+    <div class="menu-header">USER MANAGEMENT</div>
+
+    <a href="{% url 'hr_management' %}"
+       class="menu-item {% if request.resolver_match.url_name == 'people' %}active{% endif %}">
+        <i class="fas fa-user-plus"></i><span>People</span>
+    </a>
+
+    <a href="{% url 'approvalCenter' %}"
+       class="menu-item {% if request.resolver_match.url_name == 'approvalCenter' %}active{% endif %}">
+        <i class="fas fa-check-circle"></i><span>Approval Center</span>
+    </a>
+    {% endif %}
+
+    <!-- System section (Organization Configuration) -->
+    {% has_perm "Organization Configuration" as can_org_config %}
+    {% if can_org_config %}
+    <div class="menu-header">SYSTEM</div>
+
+    {% url 'request_history' as history_url %}
+    {% if history_url %}
+    <a href="{{ history_url }}"
+       class="menu-item {% if request.resolver_match.url_name == 'request_history' %}active{% endif %}">
+        <i class="fas fa-history"></i><span>Request History</span>
+    </a>
+    {% endif %}
+
+    {% url 'request_statistics' as stats_url %}
+    {% if stats_url %}
+    <a href="{{ stats_url }}"
+       class="menu-item {% if request.resolver_match.url_name == 'request_statistics' %}active{% endif %}">
+        <i class="fas fa-chart-pie"></i><span>Statistics</span>
+    </a>
+    {% endif %}
+    {% endif %}
+
+    <!-- Other (static links) -->
+    <div class="menu-header">OTHER</div>
+    <a href="{% url 'profile' %}" class="menu-item"><i class="fas fa-user"></i><span>Profile</span></a>
+    <a href="{% url 'setting' %}" class="menu-item"><i class="fas fa-cog"></i><span>Settings</span></a>
+    <a href="#" class="menu-item"><i class="fas fa-question-circle"></i><span>Help & Support</span></a>
+
+</div>
+</aside>
+
+<!-- =========================== MAIN CONTENT ============================ -->
+<main id="content" name="content">
+{% block content %}{% endblock %}
+</main>
+
+{% else %}
+
+<!-- Guest view -->
+<main class="main-content">
+    <div>
+        Already have an account?
+        <a href="{% url 'login' %}" class="btn btn-primary">
+            <i class="fas fa-sign-in-alt"></i> Login
+        </a>
+    </div>
+</main>
+
+{% endif %}
+
+{% block add %}{% endblock %}
+
+<!-- =========================== SIDEBAR SCRIPT ============================ -->
+<script>
+const sidebar = document.getElementById("sidebar");
+const toggle = document.getElementById("sidebarToggle");
+if (toggle){
+    toggle.addEventListener("click",function(){
+        sidebar.classList.toggle("show");
+    });
+}
+</script>
+
+<!-- =========================== DROPDOWN SCRIPT ============================ -->
+<script>
+const profile = document.querySelector(".user-profile");
+if(profile){
+    profile.addEventListener("click",function(){
+        this.classList.toggle("active");
+    });
+}
+document.addEventListener("click",function(e){
+    if(profile && !profile.contains(e.target)){
+        profile.classList.remove("active");
+    }
+});
+</script>
+
+</body>
+</html>
