@@ -47,7 +47,7 @@
 
         <div class="notification">
             <i class="fas fa-bell"></i>
-            <span class="badge">3</span>
+            <span class="badge">?</span>
         </div>
 
         <div class="user-profile">
@@ -133,8 +133,8 @@
     <div class="menu-header">USER MANAGEMENT</div>
 
     <a href="{% url 'hr_management' %}"
-       class="menu-item {% if request.resolver_match.url_name == 'people' %}active{% endif %}">
-        <i class="fas fa-user-plus"></i><span>People</span>
+       class="menu-item {% if request.resolver_match.url_name == 'hr_management' %}active{% endif %}">
+        <i class="fas fa-user-plus"></i><span>Human resources</span>
     </a>
 
     <a href="{% url 'approvalCenter' %}"
