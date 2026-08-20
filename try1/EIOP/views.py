@@ -17,6 +17,7 @@ from .services.user_service import UserService
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from django.contrib import messages
+from .user_creation import create_eiop_user
 
 USERS_PER_PAGE = getattr(settings, 'USERS_PER_PAGE', 10)
 
@@ -62,68 +63,15 @@ def approvalCenter(request):
 # PEOPLE PAGE – MAIN VIEW
 # ==========================================================
 
-@login_required
-def people(request):
-    if not PermissionService.can_access_hr_management(request.user):
-        return HttpResponseForbidden("Permission denied.")
-    
-    # Build combined user list (same as hr_management)
-    managers = PermissionService.get_visible_managers(request.user)
-    staff = PermissionService.get_visible_staff(request.user)
-    
-    users = []
-    for manager in managers:
-        users.append({
-            "id": manager.user.id,
-            "username": manager.user.username,
-            "name": manager.name,
-            "kind": "Manager",
-            "role": getattr(manager.role, "name", ""),
-            "role_id": getattr(manager, "role_id", None),
-            "specialization": manager.specialization,
-            "field": "",
-            "status": manager.status,
-            "permissions": manager.extraPermissions.all(),
-            "created": manager.user.date_joined,
-            "profile": manager
-        })
-    for employee in staff:
-        users.append({
-            "id": employee.user.id,
-            "username": employee.user.username,
-            "name": employee.name,
-            "kind": "Staff",
-            "role": getattr(employee.role, "name", ""),
-            "role_id": getattr(employee, "role_id", None),
-            "specialization": employee.specialization,
-            "field": employee.field,
-            "status": employee.status,
-            "permissions": employee.extraPermissions.all(),
-            "created": employee.user.date_joined,
-            "profile": employee
-        })
-    
-    paginator = Paginator(users, USERS_PER_PAGE)
-    page_number = request.GET.get("page", 1)
-    page = paginator.get_page(page_number)
-    
-    context = {
-        "users": page,
-        "can_create": PermissionService.can_create_user(request.user),
-        "can_audit": PermissionService.can_view_audit(request.user)
-    }
-    return render(request, "EIOP/people.html", context)
 
 @login_required
 def hr_management(request):
     if not PermissionService.can_access_hr_management(request.user):
         return HttpResponseForbidden("Permission denied.")
-    
-    # Build combined user list (same as hr_management)
     managers = PermissionService.get_visible_managers(request.user)
     staff = PermissionService.get_visible_staff(request.user)
     
-    users = []
+    users = [] 
     for manager in managers:
         users.append({
             "id": manager.user.id,
@@ -752,7 +700,7 @@ def user_profile(request, user_id):
         "can_demote": is_manager and PermissionService.can_demote_manager(request.user, target_user)
     }
     if is_manager:
-        data.update({"rank": profile.rank, "management_type": profile.managementType})
+        data.update({"rank": profile.rank})
     if is_staff:
         data.update({"field": profile.field, "direct_manager": profile.directManager.name if profile.directManager else None})
     if is_admin:
@@ -833,75 +781,422 @@ def search_users(request):
     context = {"users": page}
     return render(request, "EIOP/partials/user_table.html", context)
 
-
-@login_required
 @login_required
 def create_user_request(request):
-    
-    print("=" * 50)
-    print("User:", request.user)
-    print("Authenticated:", request.user.is_authenticated)
-    print("Has USER_MANAGEMENT:", PermissionService.has_permission(request.user, "USER_MANAGEMENT"))
-    print("Is Owner:", PermissionService.is_owner(request.user))
-    print("Is Org Admin:", PermissionService.is_org_admin(request.user))
-    print("Is Manager:", PermissionService.is_manager(request.user))
-    print("Can Create:", PermissionService.can_create_user(request.user))
-    print("=" * 50)
-    context = {
-            "roles": Role.objects.all(),
-            "permissions": Permission.objects.all(),
-            "managers": PermissionService.get_visible_managers(request.user),
-            "ranks": PermissionService.available_ranks(request.user),
 
-            "is_owner": PermissionService.is_owner(request.user),
-            "is_org_admin": PermissionService.is_org_admin(request.user),
-            "is_manager": PermissionService.is_manager(request.user),
-        }
-    if not PermissionService.can_create_user(request.user):
-        return permission_denied()  
-    if request.method == "POST":
-        return render(request, "EIOP/partials/request_form.html", context)
+    user = request.user
+
+    # ------------------------------------------------
+    # FIND CURRENT USER'S EIOP PROFILE
+    # ------------------------------------------------
+
+    owner = EnterpriseOwner.objects.filter(user=user).first()
+    org_admin = OrganizationAdministrator.objects.filter(user=user).first()
+    manager = Manager.objects.filter(user=user).first()
+    staff = Staff.objects.filter(user=user).first()
+
+    # ------------------------------------------------
+    # DETERMINE ENTERPRISE + ALLOWED USER TYPES
+    # ------------------------------------------------
+
+    if owner:
+        enterprise = owner.enterprise
+
+        allowed_user_types = [
+            ("STAFF", "Staff"),
+            ("MANAGER", "Manager"),
+            ("ORG_ADMIN", "Organization Administrator"),
+        ]
+
+    elif org_admin:
+        enterprise = org_admin.enterprise
+
+        allowed_user_types = [
+            ("STAFF", "Staff"),
+            ("MANAGER", "Manager"),
+        ]
+
+    elif manager:
+        enterprise = manager.enterprise
+
+        allowed_user_types = [
+            ("STAFF", "Staff"),
+            ("MANAGER", "Manager"),
+        ]
+
+    elif staff:
+        enterprise = staff.enterprise
+
+        allowed_user_types = [
+            ("STAFF", "Staff"),
+        ]
+
+    else:
+        messages.error(
+            request,
+            "You do not have an EIOP profile and cannot create users."
+        )
+        return redirect("hr_management")
+
+    # ------------------------------------------------
+    # GET → DISPLAY FORM
+    # ------------------------------------------------
+
     if request.method == "GET":
-        return render(request, "EIOP/partials/request_form.html", context)
-    
-    # POST handling (existing logic, but we'll refactor)
-    user_type = request.POST.get("user_type")
-    data = {
-        "username": request.POST.get("username"),
-        "name": request.POST.get("name"),
-        "email": request.POST.get("email"),
-        "phoneNumber": request.POST.get("phoneNumber"),
-        "gender": request.POST.get("gender"),
-        "dateOfBirth": request.POST.get("dateOfBirth"),
-        "specialization": request.POST.get("specialization"),
-        "note": request.POST.get("note"),
-        "account": request.POST.get("account")
-    }
-    try:
-        if user_type == "STAFF":
-            data["field"] = request.POST.get("field")
-            data["directManager"] = parse_int(request.POST.get("direct_manager"))
-            data["permissions"] = request.POST.getlist("permissions")
-            approval = UserService.create_staff_request(request.user, data)
-        elif user_type == "MANAGER":
-            data["rank"] = parse_int(request.POST.get("rank"))
-            data["managementType"] = request.POST.get("management_type")
-            data["permissions"] = request.POST.getlist("permissions")
-            approval = UserService.create_manager_request(request.user, data)
-        elif user_type == "ORG_ADMIN":
-            approval = UserService.create_admin_request(request.user, data)
-        else:
-            return error("Invalid user type.")
-        return success("Approval request created successfully.", request_id=approval.id)
-    except PermissionError as e:
-        return permission_denied(str(e))
-    except ValueError as e:
-        return error(str(e))
-    except Exception as e:
-        return error(str(e))
 
+        roles = Role.objects.all()
+
+        managers = Manager.objects.filter(
+            enterprise=enterprise,
+            status="ACTIVE"
+        )
+
+        permissions = Permission.objects.all()
+
+        return render(
+            request,
+            "hr/request/create/create_user_model.html",
+            {
+                "allowed_user_types": allowed_user_types,
+                "roles": roles,
+                "permissions": permissions,
+                "managers": managers,
+            }
+        )
+
+    # ------------------------------------------------
+    # POST → CREATE USER
+    # ------------------------------------------------
+
+    if request.method == "POST":
+
+        user_type = request.POST.get("user_type")
+
+        # --------------------------------------------
+        # SECURITY: CHECK USER TYPE
+        # --------------------------------------------
+
+        allowed_types = [
+            value for value, label in allowed_user_types
+        ]
+
+        if user_type not in allowed_types:
+            messages.error(
+                request,
+                "You are not allowed to create this type of user."
+            )
+            return redirect("create_user_request")
+
+
+        # --------------------------------------------
+        # FORM DATA
+        # --------------------------------------------
+
+        name = request.POST.get("name", "").strip()
+        email = request.POST.get("email", "").strip()
+        username = request.POST.get("username", "").strip()
+
+        password = request.POST.get("password", "")
+        password_confirm = request.POST.get("password_confirm", "")
+
+        phone_number = request.POST.get("phoneNumber") or None
+        gender = request.POST.get("gender") or None
+        date_of_birth = request.POST.get("dateOfBirth") or None
+        specialization = request.POST.get("specialization") or None
+        note = request.POST.get("note") or None
+
+        # --------------------------------------------
+        # ROLE
+        # --------------------------------------------
+
+        role_name = request.POST.get("role") or None
+
+        role = None
+
+        if role_name:
+
+            role = Role.objects.filter(
+                name=role_name
+            ).first()
+
+            if not role:
+                messages.error(
+                    request,
+                    "The selected role does not exist."
+                )
+                return redirect("create_user_request")
+
+
+        # --------------------------------------------
+        # OTHER DATA
+        # --------------------------------------------
+
+        permission_ids = request.POST.getlist("permissions")
+
+        field = request.POST.get("field") or None
+
+        # Leave direct manager optional for now.
+        manager_id = request.POST.get("direct_manager") or None
+
+        rank = request.POST.get("rank") or 1
+
+
+
+        # --------------------------------------------
+        # VALIDATION
+        # --------------------------------------------
+
+        if not name:
+            messages.error(
+                request,
+                "Name is required."
+            )
+            return redirect("create_user_request")
+
+
+        if not email:
+            messages.error(
+                request,
+                "Email is required."
+            )
+            return redirect("create_user_request")
+
+
+        if not username:
+            messages.error(
+                request,
+                "Username is required."
+            )
+            return redirect("create_user_request")
+
+
+        if not password:
+            messages.error(
+                request,
+                "Password is required."
+            )
+            return redirect("create_user_request")
+
+
+        if password != password_confirm:
+            messages.error(
+                request,
+                "Passwords do not match."
+            )
+            return redirect("create_user_request")
+
+
+        # --------------------------------------------
+        # CREATE USER
+        # --------------------------------------------
+
+        try:
+
+            user, profile = create_eiop_user(
+
+                user_type=user_type,
+
+                name=name,
+
+                email=email,
+
+                username=username,
+
+                password=password,
+
+                phone_number=phone_number,
+
+                gender=gender,
+
+                date_of_birth=date_of_birth,
+
+                specialization=specialization,
+
+                note=note,
+
+                enterprise=enterprise,
+
+                role=role,
+
+                permissions=permission_ids,
+
+                field=field,
+
+                direct_manager=manager_id,
+
+                rank=rank,
+
+               
+            )
+
+
+            messages.success(
+                request,
+                f"{name} was created successfully."
+            )
+
+            return redirect("hr_management")
+
+
+        except Exception as e:
+
+            print(
+                "USER CREATION ERROR:",
+                e
+            )
+
+            messages.error(
+                request,
+                str(e)
+            )
+
+            return redirect(
+                "create_user_request"
+            )
 @login_required
 @require_POST
+
+@login_required
+def create_user_options(request):
+
+    if request.method != "GET":
+        return JsonResponse(
+            {"error": "GET request required."},
+            status=405
+        )
+
+    user_type = request.GET.get("user_type")
+
+    # --------------------------------------------
+    # CURRENT USER / ENTERPRISE
+    # --------------------------------------------
+
+    user = request.user
+
+    owner = EnterpriseOwner.objects.filter(user=user).first()
+    org_admin = OrganizationAdministrator.objects.filter(user=user).first()
+    manager = Manager.objects.filter(user=user).first()
+    staff = Staff.objects.filter(user=user).first()
+
+    if owner:
+        enterprise = owner.enterprise
+
+        allowed_types = [
+            "STAFF",
+            "MANAGER",
+            "ORG_ADMIN",
+        ]
+
+    elif org_admin:
+        enterprise = org_admin.enterprise
+
+        allowed_types = [
+            "STAFF",
+            "MANAGER",
+        ]
+
+    elif manager:
+        enterprise = manager.enterprise
+
+        allowed_types = [
+            "STAFF",
+            "MANAGER",
+        ]
+
+    elif staff:
+        enterprise = staff.enterprise
+
+        allowed_types = [
+            "STAFF",
+        ]
+
+    else:
+        return JsonResponse(
+            {"error": "You are not allowed to create users."},
+            status=403
+        )
+
+    # --------------------------------------------
+    # SECURITY CHECK
+    # --------------------------------------------
+
+    if user_type not in allowed_types:
+        return JsonResponse(
+            {"error": "You are not allowed to create this user type."},
+            status=403
+        )
+
+    # --------------------------------------------
+    # COMMON DATA
+    # --------------------------------------------
+
+    roles = list(
+        Role.objects.values("name")
+    )
+
+    data = {
+        "roles": roles,
+        "permissions": [],
+        "managers": [],
+        "show_field": False,
+        "show_direct_manager": False,
+        "show_rank": False,
+        "show_extra_permissions": False,
+    }
+
+    # --------------------------------------------
+    # MANAGER
+    # --------------------------------------------
+
+    if user_type == "MANAGER":
+
+        data["show_rank"] = True
+        data["show_extra_permissions"] = True
+
+        data["permissions"] = list(
+            Permission.objects.values(
+                "id",
+                "name"
+            )
+        )
+
+    # --------------------------------------------
+    # STAFF
+    # --------------------------------------------
+
+    elif user_type == "STAFF":
+
+        data["show_field"] = True
+        data["show_direct_manager"] = True
+        data["show_extra_permissions"] = True
+
+        data["permissions"] = list(
+            Permission.objects.values(
+                "id",
+                "name"
+            )
+        )
+
+        data["managers"] = list(
+            Manager.objects.filter(
+                enterprise=enterprise,
+                status="ACTIVE"
+            ).values(
+                "id",
+                "name"
+            )
+        )
+
+    # --------------------------------------------
+    # ORGANIZATION ADMINISTRATOR
+    # --------------------------------------------
+
+    elif user_type == "ORG_ADMIN":
+
+        # No additional fields.
+        pass
+
+    return JsonResponse(data)
 
 def update_user_request(request, request_id):
     approval_request = get_request_or_404(request_id)
@@ -925,7 +1220,6 @@ def update_user_request(request, request_id):
         data["permissions"] = request.POST.getlist("permissions")
     elif target_type == "MANAGER":
         data["rank"] = parse_int(request.POST.get("rank"))
-        data["managementType"] = request.POST.get("management_type")
         data["permissions"] = request.POST.getlist("permissions")
     elif target_type == "ORG_ADMIN":
         pass
@@ -1097,7 +1391,6 @@ def promote_user(request, user_id):
         specialization=staff.specialization,
         status=staff.status,
         rank=1,
-        managementType="Promoted"
     )
     staff.delete()
     AuditLog.objects.create(enterprise=manager.enterprise, user=request.user, action="PROMOTE_USER", target_user=manager.user, description=f"Promoted {manager.name} to Manager")
@@ -1278,9 +1571,9 @@ def transfer_staff(request, staff_id):
 def transfer_manager(request, manager_id):
     manager = get_object_or_404(Manager, pk=manager_id)
     new_rank = parse_int(request.POST.get("rank"))
-    new_management_type = request.POST.get("management_type")
+    
     try:
-        UserService.transfer_manager(request.user, manager, new_rank, new_management_type)
+        UserService.transfer_manager(request.user, manager, new_rank)
         return success("Manager transferred successfully.")
     except PermissionError as e:
         return permission_denied(str(e))

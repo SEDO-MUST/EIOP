@@ -129,10 +129,9 @@ class Manager(models.Model):
     dateOfBirth = models.DateField()
     gender = models.CharField(max_length=10, choices=GENDER)
     specialization = models.CharField(max_length=150)
-    note = models.TextField(blank=True)
+    note = models.TextField(blank=True,null=True,)
     rank = models.PositiveIntegerField()
     extraPermissions = models.ManyToManyField(Permission, blank=True)
-    managementType = models.CharField(max_length=100)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="ACTIVE")
     deleted_at = models.DateTimeField(null=True, blank=True)
 
@@ -141,7 +140,7 @@ class Manager(models.Model):
 
 class Staff(models.Model):
     role = models.ForeignKey(Role, on_delete=models.SET_NULL, null=True, blank=True)
-    name = models.CharField(max_length=150)
+    name = models.CharField(max_length=150) 
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="staff", null=True, blank=True)
     email = models.EmailField(unique=True)
     phoneNumber = models.CharField(max_length=20)

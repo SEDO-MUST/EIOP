@@ -1,0 +1,560 @@
+{% extends "EIOP/base.html" %}
+{% load static %}
+{% load permissions_tags %}
+
+{% block title %}
+<title>EIOP | Create User</title>
+{% endblock %}
+
+{% block content %}
+
+<div class="main-content">
+
+    <div class="page-header">
+        <h1>Create User</h1>
+        <p>
+            Create a new user for
+            <strong>{{ current_enterprise.name|default:"Not assigned" }}</strong>
+        </p>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="card">
+
+        <div class="card-header">
+            <div>
+                <h3>Create User</h3>
+                <p>Enter the user's information below.</p>
+            </div>
+        </div>
+
+        <div class="card-body">
+
+            <form method="POST" action="{% url 'create_user_request' %}">
+
+                {% csrf_token %}
+
+                <!-- USER TYPE -->
+                <div class="form-group">
+
+                    <label for="user_type">
+                        User Type
+                    </label>
+
+                    <select
+                        id="user_type"
+                        name="user_type"
+                        class="form-control"
+                        required
+                    >
+
+                        <option value="">
+                            Select User Type
+                        </option>
+
+                        {% for value, label in allowed_user_types %}
+                            <option value="{{ value }}">
+                                {{ label }}
+                            </option>
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <!-- BASIC INFORMATION -->
+
+                <div class="form-row">
+
+                    <div class="form-group">
+
+                        <label for="name">
+                            Full Name
+                        </label>
+
+                        <input
+                            type="text"
+                            id="name"
+                            name="name"
+                            class="form-control"
+                            required
+                        >
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label for="username">
+                            Username
+                        </label>
+
+                        <input
+                            type="text"
+                            id="username"
+                            name="username"
+                            class="form-control"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-row">
+
+                    <div class="form-group">
+
+                        <label for="email">
+                            Email
+                        </label>
+
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            class="form-control"
+                            required
+                        >
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label for="phoneNumber">
+                            Phone Number
+                        </label>
+
+                        <input
+                            type="text"
+                            id="phoneNumber"
+                            name="phoneNumber"
+                            class="form-control"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <!-- PASSWORD -->
+
+                <div class="form-row">
+
+                    <div class="form-group">
+
+                        <label for="password">
+                            Password
+                        </label>
+
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            class="form-control"
+                            required
+                        >
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label for="password_confirm">
+                            Confirm Password
+                        </label>
+
+                        <input
+                            type="password"
+                            id="password_confirm"
+                            name="password_confirm"
+                            class="form-control"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <!-- PERSONAL INFORMATION -->
+
+                <div class="form-row">
+
+                    <div class="form-group">
+
+                        <label for="gender">
+                            Gender
+                        </label>
+
+                        <select
+                            id="gender"
+                            name="gender"
+                            class="form-control"
+                        >
+
+                            <option value="">
+                                Select Gender
+                            </option>
+
+                            <option value="Male">
+                                Male
+                            </option>
+
+                            <option value="Female">
+                                Female
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label for="dateOfBirth">
+                            Date of Birth
+                        </label>
+
+                        <input
+                            type="date"
+                            id="dateOfBirth"
+                            name="dateOfBirth"
+                            class="form-control"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-row">
+
+                    <div class="form-group">
+
+                        <label for="specialization">
+                            Specialization
+                        </label>
+
+                        <input
+                            type="text"
+                            id="specialization"
+                            name="specialization"
+                            class="form-control"
+                        >
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label for="role">
+                            Role
+                        </label>
+
+                        <select
+                            id="role"
+                            name="role"
+                            class="form-control"
+                            required
+                        >
+
+                            <option value="">
+                                Select Role
+                            </option>
+
+                            {% for role in roles %}
+                                <option value="{{ role.name }}">
+                                    {{ role.name }}
+                                </option>
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+
+                <!-- DYNAMIC USER-TYPE FIELDS -->
+
+                <div id="dynamic-user-fields"></div>
+
+
+                <!-- NOTE -->
+
+                <div class="form-group">
+
+                    <label for="note">
+                        Note
+                    </label>
+
+                    <textarea
+                        id="note"
+                        name="note"
+                        class="form-control"
+                        rows="4"
+                    ></textarea>
+
+                </div>
+
+
+                <!-- BUTTONS -->
+
+                <div class="form-actions">
+
+                    <a
+                        href="{% url 'hr_management' %}"
+                        class="btn btn-secondary"
+                    >
+                        <i class="fas fa-arrow-left"></i>
+                        Back
+                    </a>
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                    >
+                        <i class="fas fa-user-plus"></i>
+                        Create User
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const userTypeSelect =
+        document.getElementById("user_type");
+
+    const dynamicFields =
+        document.getElementById("dynamic-user-fields");
+
+
+    userTypeSelect.addEventListener("change", function () {
+
+        const userType = this.value;
+
+        dynamicFields.innerHTML = "";
+
+        if (!userType) {
+            return;
+        }
+
+
+        fetch(
+            "{% url 'create_user_options' %}?user_type="
+            + encodeURIComponent(userType),
+            {
+                method: "GET",
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest"
+                }
+            }
+        )
+
+        .then(response => {
+
+            if (!response.ok) {
+                throw new Error(
+                    "Unable to load user options."
+                );
+            }
+
+            return response.json();
+
+        })
+
+        .then(data => {
+
+            if (data.error) {
+                alert(data.error);
+                return;
+            }
+
+            buildDynamicFields(data);
+
+        })
+
+        .catch(error => {
+
+            console.error(
+                "USER OPTIONS ERROR:",
+                error
+            );
+
+        });
+
+    });
+
+
+    function buildDynamicFields(data) {
+
+        let html = "";
+
+
+        /* =========================================
+           FIELD — STAFF
+        ========================================= */
+
+        if (data.show_field) {
+
+            html += `
+                <div class="form-group">
+
+                    <label for="field">
+                        Field
+                    </label>
+
+                    <input
+                        type="text"
+                        id="field"
+                        name="field"
+                        class="form-control"
+                    >
+
+                </div>
+            `;
+
+        }
+
+
+        /* =========================================
+           DIRECT MANAGER — STAFF
+        ========================================= */
+
+        if (data.show_direct_manager) {
+
+            html += `
+                <div class="form-group">
+
+                    <label for="direct_manager">
+                        Direct Manager
+                    </label>
+
+                    <select
+                        id="direct_manager"
+                        name="direct_manager"
+                        class="form-control"
+                    >
+
+                        <option value="">
+                            No Direct Manager
+                        </option>
+            `;
+
+
+            data.managers.forEach(function (manager) {
+
+                html += `
+                    <option value="${manager.id}">
+                        ${manager.name}
+                    </option>
+                `;
+
+            });
+
+
+            html += `
+                    </select>
+
+                </div>
+            `;
+
+        }
+
+
+        /* =========================================
+           RANK — MANAGER
+        ========================================= */
+
+        if (data.show_rank) {
+
+            html += `
+                <div class="form-group">
+
+                    <label for="rank">
+                        Rank
+                    </label>
+
+                    <input
+                        type="number"
+                        id="rank"
+                        name="rank"
+                        class="form-control"
+                        value="1"
+                        min="1"
+                    >
+
+                </div>
+            `;
+
+        }
+
+
+        /* =========================================
+           EXTRA PERMISSIONS
+        ========================================= */
+
+        if (data.show_extra_permissions) {
+
+            html += `
+                <div class="form-group">
+
+                    <label for="permissions">
+                        Extra Permissions
+                    </label>
+
+                    <select
+                        id="permissions"
+                        name="permissions"
+                        class="form-control"
+                        multiple
+                    >
+            `;
+
+
+            data.permissions.forEach(function (permission) {
+
+                html += `
+                    <option value="${permission.id}">
+                        ${permission.name}
+                    </option>
+                `;
+
+            });
+
+
+            html += `
+                    </select>
+
+                </div>
+            `;
+
+        }
+
+
+        dynamicFields.innerHTML = html;
+
+    }
+
+});
+
+</script>
+
+{% endblock %}

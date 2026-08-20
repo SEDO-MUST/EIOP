@@ -63,13 +63,7 @@
             <div class="dropdown-menu">
                 <a href="{% url 'profile' %}"><i class="fas fa-user"></i> Profile</a>
                 <a href="{% url 'setting' %}"><i class="fas fa-cog"></i> Settings</a>
-                <!-- Actual logout form inside dropdown -->
-                <form action="{% url 'logout' %}" method="post">
-                    {% csrf_token %}
-                    <button type="submit" class="dropdown-item">
-                        <i class="fas fa-sign-out-alt"></i> Logout
-                    </button>
-                </form>
+            
             </div>
         </div>
     </div>
@@ -128,7 +122,7 @@
     {% endif %}
 
     <!-- User Management section -->
-    {% has_perm "User Management" as can_user_mgmt %}
+    {% has_perm "User Management" as can_user_mgmt %} 
     {% if can_user_mgmt %}
     <div class="menu-header">USER MANAGEMENT</div>
 

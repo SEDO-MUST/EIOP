@@ -1,491 +1,228 @@
-<form id="createUserForm"
-      method="post"
-      action="{% url 'create_user_request' %}">
-
+<form id="userForm" action="{% url 'create_user_request' %}" method="post">
     {% csrf_token %}
 
-    <div class="modal-header">
-
-        <h5 class="modal-title">
-
-            Create User Request
-
-        </h5>
-
-        <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="modal">
-        </button>
-
+    <div class="form-group">
+        <label>User Type</label>
+        <select name="user_type" class="form-control" required>
+            <option value="STAFF">Staff</option>
+            <option value="MANAGER">Manager</option>
+            <option value="ORG_ADMIN">Organization Administrator</option>
+        </select>
     </div>
 
-    <div class="modal-body">
-
-        <!-- ====================================== -->
-        <!-- USER TYPE -->
-        <!-- ====================================== -->
-
-        <div class="mb-4">
-
-            <label class="form-label">
-
-                User Type
-
-            </label>
-
-            <select
-                class="form-select"
-                id="userType"
-                name="user_type"
-                required>
-
-                <option value="">
-
-                    Select...
-
-                </option>
-
-                <option value="STAFF">
-
-                    Staff
-
-                </option>
-
-                <option value="MANAGER">
-
-                    Manager
-
-                </option>
-
-                {% if request.user|has_perm:"Create Organization Administrator" %}
-
-                <option value="ORG_ADMIN">
-
-                    Organization Administrator
-
-                </option>
-
-                {% endif %}
-
-            </select>
-
+    <div class="form-row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label>Username</label>
+                <input
+                    type="text"
+                    name="username"
+                    class="form-control"
+                    placeholder="Optional, auto-generated if empty"
+                >
+            </div>
         </div>
 
-        <hr>
-
-        <!-- ====================================== -->
-        <!-- COMMON INFORMATION -->
-        <!-- ====================================== -->
-
-        <div class="row">
-
-            <div class="col-md-6 mb-3">
-
-                <label>
-
-                    Username
-
-                </label>
-
+        <div class="col-md-6">
+            <div class="form-group">
+                <label>Name</label>
                 <input
-                    class="form-control"
-                    name="username">
-
-            </div>
-
-            <div class="col-md-6 mb-3">
-
-                <label>
-
-                    Name
-
-                </label>
-
-                <input
-                    class="form-control"
+                    type="text"
                     name="name"
-                    required>
-
+                    class="form-control"
+                    required
+                >
             </div>
+        </div>
+    </div>
 
-            <div class="col-md-6 mb-3">
-
-                <label>
-
-                    Email
-
-                </label>
-
+    <div class="form-row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label>Email</label>
                 <input
                     type="email"
+                    name="email"
                     class="form-control"
-                    name="email">
-
+                    required
+                >
             </div>
+        </div>
 
-            <div class="col-md-6 mb-3">
-
-                <label>
-
-                    Phone
-
-                </label>
-
+        <div class="col-md-6">
+            <div class="form-group">
+                <label>Phone</label>
                 <input
+                    type="text"
+                    name="phoneNumber"
                     class="form-control"
-                    name="phoneNumber">
-
+                >
             </div>
+        </div>
+    </div>
 
-            <div class="col-md-6 mb-3">
-
-                <label>
-
-                    Gender
-
-                </label>
-
-                <select
-                    class="form-select"
-                    name="gender">
-
-                    <option value="Male">
-
-                        Male
-
-                    </option>
-
-                    <option value="Female">
-
-                        Female
-
-                    </option>
-
+    <div class="form-row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label>Gender</label>
+                <select name="gender" class="form-control">
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
                 </select>
-
             </div>
+        </div>
 
-            <div class="col-md-6 mb-3">
-
-                <label>
-
-                    Date of Birth
-
-                </label>
-
+        <div class="col-md-6">
+            <div class="form-group">
+                <label>Date of Birth</label>
                 <input
                     type="date"
+                    name="dateOfBirth"
                     class="form-control"
-                    name="dateOfBirth">
-
+                >
             </div>
+        </div>
+    </div>
 
-            <div class="col-md-6 mb-3">
+    <div class="form-group">
+        <label>Specialization</label>
+        <input
+            type="text"
+            name="specialization"
+            class="form-control"
+        >
+    </div>
 
-                <label>
+    <div class="form-group">
+        <label>Role</label>
+        <select name="role" class="form-control">
+            <option value="">-- Select Role --</option>
 
-                    Specialization
+            {% for role in roles %}
+                <option value="{{ role.id }}">
+                    {{ role.name }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
 
-                </label>
+    <div class="form-group">
+        <label>Permissions</label>
+        <select
+            name="permissions"
+            multiple
+            class="form-control"
+        >
+            {% for perm in permissions %}
+                <option value="{{ perm.id }}">
+                    {{ perm.name }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
 
-                <input
-                    class="form-control"
-                    name="specialization">
+    <!-- STAFF FIELDS -->
+    <div id="staffFields" style="display:none;">
 
-            </div>
-
-            <div class="col-md-6 mb-3">
-
-                <label>
-
-                    Account
-
-                </label>
-
-                <input
-                    class="form-control"
-                    name="account">
-
-            </div>
-
-            <div class="col-12 mb-3">
-
-                <label>
-
-                    Notes
-
-                </label>
-
-                <textarea
-                    class="form-control"
-                    rows="3"
-                    name="note"></textarea>
-
-            </div>
-
+        <div class="form-group">
+            <label>Field</label>
+            <input
+                type="text"
+                name="field"
+                class="form-control"
+            >
         </div>
 
-        <!-- ====================================== -->
-        <!-- STAFF -->
-        <!-- ====================================== -->
-
-        <div
-            id="staffFields"
-            style="display:none;">
-
-            <hr>
-
-            <h5>
-
-                Staff Information
-
-            </h5>
-
-            <div class="row">
-
-                <div class="col-md-6">
-
-                    <label>
-
-                        Field
-
-                    </label>
-
-                    <select
-                        class="form-select"
-                        name="field">
-
-                        {% for field in fields %}
-
-                        <option value="{{ field.id }}">
-
-                            {{ field.name }}
-
-                        </option>
-
-                        {% endfor %}
-
-                    </select>
-
-                </div>
-
-                <div class="col-md-6">
-
-                    <label>
-
-                        Direct Manager
-
-                    </label>
-
-                    <select
-                        class="form-select"
-                        name="direct_manager">
-
-                        <option value="">
-
-                            ---------
-
-                        </option>
-
-                        {% for manager in managers %}
-
-                        <option value="{{ manager.id }}">
-
-                            {{ manager.name }}
-
-                        </option>
-
-                        {% endfor %}
-
-                    </select>
-
-                </div>
-
-            </div>
-
-        </div>
-
-        <!-- ====================================== -->
-        <!-- MANAGER -->
-        <!-- ====================================== -->
-
-        <div
-            id="managerFields"
-            style="display:none;">
-
-            <hr>
-
-            <h5>
-
-                Manager Information
-
-            </h5>
-
-            <div class="row">
-
-                <div class="col-md-6">
-
-                    <label>
-
-                        Rank
-
-                    </label>
-
-                    <input
-                        type="number"
-                        class="form-control"
-                        name="rank">
-
-                </div>
-
-                <div class="col-md-6">
-
-                    <label>
-
-                        Management Type
-
-                    </label>
-
-                    <select
-                        class="form-select"
-                        name="management_type">
-
-                        <option value="GENERAL">
-
-                            General
-
-                        </option>
-
-                        <option value="FIELD">
-
-                            Field
-
-                        </option>
-
-                    </select>
-
-                </div>
-
-            </div>
-
-        </div>
-
-        <!-- ====================================== -->
-        <!-- PERMISSIONS -->
-        <!-- ====================================== -->
-
-        <div
-            id="permissionSection"
-            style="display:none;">
-
-            <hr>
-
-            <h5>
-
-                Permissions
-
-            </h5>
-
-            <div class="row">
-
-                {% for permission in permissions %}
-
-                <div class="col-md-4">
-
-                    <div class="form-check">
-
-                        <input
-
-                            class="form-check-input"
-
-                            type="checkbox"
-
-                            value="{{ permission.id }}"
-
-                            name="permissions">
-
-                        <label class="form-check-label">
-
-                            {{ permission.name }}
-
-                        </label>
-
-                    </div>
-
-                </div>
-
+        <div class="form-group">
+            <label>Direct Manager</label>
+
+            <select
+                name="direct_manager"
+                class="form-control"
+            >
+                <option value="">None</option>
+
+                {% for mgr in managers %}
+                    <option value="{{ mgr.id }}">
+                        {{ mgr.name }}
+                    </option>
                 {% endfor %}
-
-            </div>
-
+            </select>
         </div>
 
     </div>
 
-    <div class="modal-footer">
+    <!-- MANAGER FIELDS -->
+    <div id="managerFields" style="display:none;">
 
-        <button
-            class="btn btn-secondary"
-            data-bs-dismiss="modal"
-            type="button">
+        <div class="form-group">
+            <label>Rank</label>
 
-            Cancel
+            <input
+                type="number"
+                name="rank"
+                class="form-control"
+                value="1"
+                min="1"
+            >
+        </div>
 
-        </button>
+        <div class="form-group">
+            <label>Management Type</label>
 
-        <button
-            class="btn btn-primary"
-            type="submit">
-
-            Submit Request
-
-        </button>
+            <input
+                type="text"
+                name="management_type"
+                class="form-control"
+            >
+        </div>
 
     </div>
+
+    <div class="form-group">
+        <label>Note</label>
+
+        <textarea
+            name="note"
+            class="form-control"
+            rows="3"
+        ></textarea>
+    </div>
+
+    <button
+        type="submit"
+        class="btn btn-primary"
+    >
+        Create User
+    </button>
 
 </form>
 
+
 <script>
+$(document).ready(function () {
 
-const userType = document.getElementById("userType");
+    const userType = $('select[name="user_type"]');
 
-const staffFields = document.getElementById("staffFields");
+    function updateFields() {
 
-const managerFields = document.getElementById("managerFields");
+        const value = userType.val();
 
-const permissionSection = document.getElementById("permissionSection");
+        $('#staffFields').hide();
+        $('#managerFields').hide();
 
-userType.addEventListener("change", function () {
+        if (value === 'STAFF') {
+            $('#staffFields').show();
+        }
 
-    staffFields.style.display = "none";
-
-    managerFields.style.display = "none";
-
-    permissionSection.style.display = "none";
-
-    if (this.value === "STAFF") {
-
-        staffFields.style.display = "block";
-
-        permissionSection.style.display = "block";
-
+        if (value === 'MANAGER') {
+            $('#managerFields').show();
+        }
     }
 
-    else if (this.value === "MANAGER") {
+    userType.on('change', updateFields);
 
-        managerFields.style.display = "block";
-
-        permissionSection.style.display = "block";
-
-    }
-
-    else if (this.value === "ORG_ADMIN") {
-
-        permissionSection.style.display = "block";
-
-    }
+    updateFields();
 
 });
-
 </script>
